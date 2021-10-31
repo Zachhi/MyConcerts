@@ -45,6 +45,7 @@ decorator==4.4.0
 defusedxml==0.6.0
 distributed==2.5.2
 Django==3.2.8
+django-crispy-forms==1.13.0
 docutils==0.15.2
 entrypoints==0.3
 et-xmlfile==1.0.1
@@ -146,6 +147,9 @@ pylint==2.4.2
 pyodbc==4.0.27
 pyOpenSSL==19.0.0
 pyparsing==2.4.2
+PyQt5==5.12.3
+PyQt5-sip==12.9.0
+PyQtWebEngine==5.12.1
 pyrsistent==0.15.4
 PySocks==1.7.1
 pytest==5.2.1
@@ -199,6 +203,7 @@ toolz==0.10.0
 tornado==6.0.3
 tqdm==4.36.1
 traitlets==4.3.3
+typed-ast==1.4.3
 typing-extensions==3.10.0.2
 unicodecsv==0.14.1
 urllib3==1.24.2

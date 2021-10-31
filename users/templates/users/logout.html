@@ -1,0 +1,9 @@
+{% extends "landing/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            <a href = "{% url 'login' %}">Login Again</a>
+        </small>
+    </div>
+{% endblock content %}
