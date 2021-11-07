@@ -1,15 +1,20 @@
 {% extends "landing/base.html" %}
 
 {% block content %}
-<div class="col-md-6 col-auto">
-  <div class="card">
-    <div class="card-header">
-      Concerts
+<div class="col-md-7 col-auto">
+  <div class="content-section">
+    <div class="card p-2">
+      <div class="card-header text-center">
+        <h3>Concerts</h3>
+      </div>
+      {% for x in events %}
+        <a href="{{x.url}}" target="_blank" rel="noopener noreferrer" class="text-center nav-link link-concert">
+          {{x.name}}
+        </a>
+        <p></p>
+      {% endfor %}
     </div>
-    {% for x in events %}
-      {{x.name}} - {{x.url}}
-      <p></p>
-    {% endfor %}
+
   </div>
 </div>
 {% endblock content %}
