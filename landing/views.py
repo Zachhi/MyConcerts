@@ -33,7 +33,7 @@ def home(request):
 
 def home(request):
     response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=1') 
-    # try changing p = 2!!!!!!!!!!!!! on line 12
+    # try changing p = 2!!!!!!!!!!!!! on line above
     # super easy pagination-type querying 
 
     concerts = response.json()
@@ -74,13 +74,13 @@ def home(request):
             #print(e["priceRanges"][0]["min"])
         except: 
             dictionary["min_price"] = "TBA"
-            continue
 
         try:
             dictionary["max_price"] = e["priceRanges"][0]["max"]
             #print(e["priceRanges"][0]["max"])
         except: 
             dictionary["max_price"] = "TBA"
+
         events.append(dictionary)
     return render(request, "landing/home.html", {"events": events})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
