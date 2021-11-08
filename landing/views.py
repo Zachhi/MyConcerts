@@ -48,7 +48,7 @@ def home(request):
         #print(e["name"])
         dictionary["url"] = e["url"]
         #print(e["url"])
-        dictionary["image"] = e["images"][0]["url"]
+        dictionary["image"] = e["images"][1]["url"]
         #print(e["images"][0]["url"])
         if(e["dates"]["start"]["dateTBA"] == False):
             dictionary["date"] = e["dates"]["start"]["localDate"]

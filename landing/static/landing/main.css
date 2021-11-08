@@ -47,11 +47,17 @@ ul {
 }
 
 .content-section {
-  background: var(--b4);
+  /*background: var(--b4);
   padding: 10px 20px;
   border: 1px solid var(--b4);
   border-radius: 3px;
+  margin-bottom: 20px;*/
+  background: #ffffff;
+  padding: 10px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
   margin-bottom: 20px;
+  margin-left: 50px;
 }
 
 .article-title {
@@ -113,4 +119,43 @@ a {
 }
 a:hover {
   transform: scale(1.15);
+}
+
+.cardHelp {
+  text-decoration: none;
+  color: #1d1d1d;   
+}
+.cardHelp:link {
+  text-decoration: none;
+}
+.cardHelp:hover {
+  text-decoration: none;
+}
+
+.cardBorder {
+  border: 1px solid rgba(51, 51, 51, 0.479);
+}
+.imgBorder {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.295);
+}
+
+.cardMargin{
+  margin-bottom: 30px;
+}
+
+/* Help align different sized text vertically in cards */
+.alignVertical{
+  vertical-align: top; 
+  line-height: 20px;
+}
+
+.card-text{
+  margin-bottom: 5px;
+}
+
+/* Help with making images same height in cards */
+.card-img-top{
+  width: 100%;
+  height: 10vw;
+  object-fit: cover;
 }
