@@ -1,5 +1,9 @@
 from django.shortcuts import render
 import requests
+from concerts.landing.credentials import CLIENT_ID, CLIENT_SECRET
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from . import credentials
 '''
 post = [
     {
@@ -48,7 +52,7 @@ def home(request):
         #print(e["name"])
         dictionary["url"] = e["url"]
         #print(e["url"])
-        dictionary["image"] = e["images"][1]["url"]
+        dictionary["image"] = e["images"][0]["url"]
         #print(e["images"][0]["url"])
         if(e["dates"]["start"]["dateTBA"] == False):
             dictionary["date"] = e["dates"]["start"]["localDate"]
@@ -89,3 +93,13 @@ def home(request):
 
 def about(request):
     return render(request, 'landing/about.html', {'title':'About'}) 
+
+def SpotifyAuth(request):
+    SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
+
+    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
+
+    results = sp.current_user_top_artists(limit=20, time_range='long_term')
+    print(results['items']['artist'])
+
+    
