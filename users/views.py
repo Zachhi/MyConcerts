@@ -10,8 +10,10 @@ def register(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
+            spotify = form.cleaned_data.get('spotify')
+            print(spotify)
             messages.success(request, f'Account created for {username}!')
-            return redirect('users-login')
+            return redirect('login')
 
     else:
         form = UserRegisterForm()
