@@ -35,7 +35,7 @@ def home(request):
     return render(request, 'landing/home.html', context)
 '''
 
-def getSpotifyInfo(): #carefull will call authetentification each time its called.. so we really woudl like to only call once
+def get_spotify_info(): #carefull will call authetentification each time its called.. so we really woudl like to only call once
     SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/', scope=SCOPE))
     topartists = sp.current_user_top_artists(limit=20, time_range='long_term')
@@ -59,10 +59,36 @@ def getSpotifyInfo(): #carefull will call authetentification each time its calle
         topgenres_name.append(topartists['items'][i]['genres'])
     user_top["topgenres"] = topgenres_name
     return user_top
-userlisttop = getSpotifyInfo()
+
+userlisttop = get_spotify_info()
+
 def home(request):
     print(userlisttop["topartists"])
     response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=1') 
+    # try changing p = 2!!!!!!!!!!!!! on line above
+    # super easy pagination-type querying 
+    events = ticket_master_request()
+    
+    return render(request, "landing/home.html", {"events": events})
+    # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
+
+
+
+def about(request):
+    return render(request, 'landing/about.html', {'title':'About'}) 
+
+def spotify_auth(request):
+    SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
+
+    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
+
+    results = sp.current_user_top_artists(limit=20, time_range='long_term')
+    print(results['items']['artist'])
+
+
+def ticket_master_request(genre = 'Pop'):
+    url = 'https://app.ticketmaster.com/discovery/v2/events.json?classificationName=' + genre + '&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=1'
+    response = requests.get(url) 
     # try changing p = 2!!!!!!!!!!!!! on line above
     # super easy pagination-type querying 
     
@@ -70,10 +96,12 @@ def home(request):
     concerts = concerts["_embedded"]
     events_from_api = concerts["events"]
 
+
     events = list()
 
     for e in events_from_api:
         dictionary = {}
+
         dictionary["name"] = e["name"]
         #print(e["name"])
         dictionary["url"] = e["url"]
@@ -112,20 +140,6 @@ def home(request):
             dictionary["max_price"] = "TBA"
 
         events.append(dictionary)
-    return render(request, "landing/home.html", {"events": events})
-    # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-
-
-def about(request):
-    return render(request, 'landing/about.html', {'title':'About'}) 
-
-def SpotifyAuth(request):
-    SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
-
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
-
-    results = sp.current_user_top_artists(limit=20, time_range='long_term')
-    print(results['items']['artist'])
-
+    return events
     
