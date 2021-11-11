@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import requests
-from concerts.landing.credentials import CLIENT_ID, CLIENT_SECRET
+from landing.credentials import CLIENT_ID, CLIENT_SECRET
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
@@ -35,11 +35,22 @@ def home(request):
     return render(request, 'landing/home.html', context)
 '''
 
+def getSpotifyInfo(): #carefull will call authetentification each time its called.. so we really woudl like to only call once
+    SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
+    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/', scope=SCOPE))
+    topartists = sp.current_user_top_artists(limit=10, time_range='long_term')
+    toptracks = sp.current_user_top_tracks(limit=20, time_range='long_term')
+    toptrack = toptracks['items'][0]
+    print(toptrack)
+    artist = topartists['items'][0]['genres']
+    return artist
+artist = getSpotifyInfo()
 def home(request):
     response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=1') 
     # try changing p = 2!!!!!!!!!!!!! on line above
     # super easy pagination-type querying 
-
+    
+    print(artist)
     concerts = response.json()
     concerts = concerts["_embedded"]
     events_from_api = concerts["events"]
