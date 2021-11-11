@@ -38,19 +38,34 @@ def home(request):
 def getSpotifyInfo(): #carefull will call authetentification each time its called.. so we really woudl like to only call once
     SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/', scope=SCOPE))
-    topartists = sp.current_user_top_artists(limit=10, time_range='long_term')
+    topartists = sp.current_user_top_artists(limit=20, time_range='long_term')
     toptracks = sp.current_user_top_tracks(limit=20, time_range='long_term')
-    toptrack = toptracks['items'][0]
-    print(toptrack)
+    toptrack = toptracks['items'][0]['name']
+    #print(toptrack)
     artist = topartists['items'][0]['genres']
-    return artist
-artist = getSpotifyInfo()
+    user_top = {}
+    toptracks_name = []
+    topartists_name = []
+    topgenres_name = []
+    for i in range(20):
+        toptracks_name.append(toptracks['items'][i]['name'])
+    user_top["toptracks"] = toptracks_name
+    
+    for i in range(20):
+        topartists_name.append(topartists['items'][i]['name'])
+    user_top["topartists"] = topartists_name
+    
+    for i in range(20):
+        topgenres_name.append(topartists['items'][i]['genres'])
+    user_top["topgenres"] = topgenres_name
+    return user_top
+userlisttop = getSpotifyInfo()
 def home(request):
+    print(userlisttop["topartists"])
     response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=1') 
     # try changing p = 2!!!!!!!!!!!!! on line above
     # super easy pagination-type querying 
     
-    print(artist)
     concerts = response.json()
     concerts = concerts["_embedded"]
     events_from_api = concerts["events"]
