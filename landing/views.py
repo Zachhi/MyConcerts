@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import requests
+from datetime import date
 '''
 post = [
     {
@@ -17,7 +18,7 @@ post = [
 ]
 
 def home(request):
-    response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=1') 
+    response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=200') 
     # try changing p = 2!!!!!!!!!!!!! on line 12
     # super easy pagination-type querying 
     concerts = response.json()
@@ -31,61 +32,71 @@ def home(request):
     return render(request, 'landing/home.html', context)
 '''
 
-def home(request):
-    response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=1') 
-    # try changing p = 2!!!!!!!!!!!!! on line above
-    # super easy pagination-type querying 
+def login_home(request):
+    return render(request, "landing/loginhome.html")
+
+def home(request, page): 
+
+    events = ticket_master_request(page=page)
+    return render(request, "landing/home.html", {"events": events, "page": page})
+    # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
+
+def ticket_master_request(genre = '', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25'):
+    url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=' + str(page)
+    if(city != ''):
+        url = url + '&city=' + city
+    if(genre != ''):
+        url = url + '&classificationName=' + genre
+    if(start_date != ''):
+        url = url + '&startDateTime=' + start_date + 'T00:00:00Z'
+    if(end_date != ''):
+        url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
+
+    response = requests.get(url) 
 
     concerts = response.json()
-    concerts = concerts["_embedded"]
+    try:
+        concerts = concerts["_embedded"]
+    except: 
+        return("error")
     events_from_api = concerts["events"]
+
 
     events = list()
 
     for e in events_from_api:
         dictionary = {}
+
         dictionary["name"] = e["name"]
-        #print(e["name"])
         dictionary["url"] = e["url"]
-        #print(e["url"])
-        dictionary["image"] = e["images"][1]["url"]
-        #print(e["images"][0]["url"])
+        dictionary["image"] = e["images"][0]["url"]
         if(e["dates"]["start"]["dateTBA"] == False):
             dictionary["date"] = e["dates"]["start"]["localDate"]
-        #   print(e["dates"]["start"]["localDate"])
         else:
             dictionary["date"] = "TBA"
-    
+        
         if(e["dates"]["start"]["timeTBA"] == False):
             dictionary["time"] = e["dates"]["start"]['localTime']
-        #    print(e["dates"]["start"]['localTime'])
         else: 
             dictionary["time"] = "TBA"
 
         dictionary["venue"] = e["_embedded"]["venues"][0]["name"]
-        #print(e["_embedded"]["venues"][0]["name"])
         dictionary["city"] = e["_embedded"]["venues"][0]["city"]["name"]
-        #print(e["_embedded"]["venues"][0]["city"]["name"])
         dictionary["state"] = e["_embedded"]["venues"][0]["state"]["name"]
-        #print(e["_embedded"]["venues"][0]["state"]["name"])
         
         try:
             dictionary["min_price"] = e["priceRanges"][0]["min"]
-            #print(e["priceRanges"][0]["min"])
         except: 
             dictionary["min_price"] = "TBA"
 
         try:
             dictionary["max_price"] = e["priceRanges"][0]["max"]
-            #print(e["priceRanges"][0]["max"])
         except: 
             dictionary["max_price"] = "TBA"
-
+            
         events.append(dictionary)
-    return render(request, "landing/home.html", {"events": events})
-    # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-
+    return events
 
 def about(request):
     return render(request, 'landing/about.html', {'title':'About'}) 

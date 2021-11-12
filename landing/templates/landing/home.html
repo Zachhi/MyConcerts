@@ -15,28 +15,43 @@
         </div>  
     </div>
 </div> -->
-<div class="container-fluid">
-    <div class="card-deck flex-row" style="min-width: 120%;">
-    <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
-        {% for x in events %}
-        <a href="{{ x.url }}" class="cardHelp cardMargin" >
-            <div class="card h-100 cardHelp cardBorder" style="width: 15em; height: 15em;">
-                <img class="card-img-top imgBorder" src="{{ x.image }}" alt="Card image cap">
-                <div class="card-body">
-                    <h5 class="card-title cardHelp" style="font-size: 1.1em;">{{ x.name }}</h5>
-                    <div class = "d-flex justify-content-between ">
-                        <h5 class="card-text cardHelp alignVertical" style="font-size: .7em; color: rgba(0, 0, 0, 0.699);">{{ x.city }}, {{ x.state }}</h5>
+{% if events != "error"%}
+    <div class="container-fluid">
+        <div class="card-deck flex-row" style="min-width: 120%;">
+        <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
+            
+            {% for x in events %}
+            <a href="{{ x.url }}" class="cardHelp cardMargin" >
+                <div class="card h-100 cardHelp cardBorder" style="width: 15em; height: 15em;">
+                    <img class="card-img-top imgBorder" src="{{ x.image }}" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title cardHelp" style="font-size: 1.1em;">{{ x.name }}</h5>
+                        <div class = "d-flex justify-content-between ">
+                            <h5 class="card-text cardHelp alignVertical" style="font-size: .7em; color: rgba(0, 0, 0, 0.699);">{{ x.city }}, {{ x.state }}</h5>
+                        </div>
+                        <div class = "d-flex justify-content-between">
+                            <p class="card-text cardHelp" style="font-size: .8em; color: rgba(0, 0, 0, 0.699);">{{ x.date }}</p>
+                            <p class="card-text cardHelp" style="font-size: .8em; color: rgb(100, 199, 61);">${{ x.min_price }} - ${{ x.max_price }}</p>
+                        </div>
                     </div>
-                    <div class = "d-flex justify-content-between">
-                        <p class="card-text cardHelp" style="font-size: .8em; color: rgba(0, 0, 0, 0.699);">{{ x.date }}</p>
-                        <p class="card-text cardHelp" style="font-size: .8em; color: rgb(100, 199, 61);">${{ x.min_price }} - ${{ x.max_price }}</p>
-                    </div>
-                </div>
-            </div> 
-        </a>
+                </div> 
+            </a>
+            {% endfor %}
+        </div>
 
-        {% endfor %}
-    </div>
+        {% if page == 1 %}
+            <p>{{ page }}</p>
+            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
+        {% elif page > 1 %}
+            <a class="btn btn-outline-info mb-4" >First</a>
+            <a class="btn btn-outline-info mb-4" >Previous</a>
+            <a class="btn btn-outline-info mb-4" >Next</a>
+        {% endif %}
+    {% else %}
+        <p>error</p>
+    {% endif %}
+
+
     <!--</div>-->
 </div> 
 {% endblock content %}

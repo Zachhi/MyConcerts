@@ -25,7 +25,7 @@
     <header class="site-header">
         <nav class="navbar navbar-expand-md navbar-dark bg-navbar fixed-top">
             <div class="container">
-                <a class="navbar-brand mr-4" href="{% url 'landing-home' %}">
+                <a class="navbar-brand mr-4" href="{% url 'login-home' %}">
                     <i class="fas fa-guitar"></i>
                     MyConcerts
                 </a>
@@ -35,7 +35,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto text-center">
-                        <a class="nav-item nav-link" href="{% url 'landing-home' %}">Home</a>
+                        <a class="nav-item nav-link" href="{% url 'landing-home' page=1 %}">Home</a>
                         <a class="nav-item nav-link" href="{% url 'landing-about' %}">About</a>
                     </div>
                     <!-- Navbar Right Side -->
