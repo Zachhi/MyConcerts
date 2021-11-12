@@ -1,21 +1,7 @@
 {% extends "landing/base.html" %}
 
 {% block content %}
-<!-- <div class="col-md-7 col-auto">
-    <div class="content-section">
-        <div class="card p-2">
-            <div class="card-header text-center">
-                <h3>Concerts</h3>
-            </div>
-            {% for x in events %}
-            <a href="{{x.url}}" target="_blank" rel="noopener noreferrer" class="text-center nav-link link-concert">
-            {{x.name}} </a>
-            <p></p>
-            {% endfor %}
-        </div>  
-    </div>
-</div> -->
-{% if events != "error"%}
+{% if events != "error" %}
     <div class="container-fluid">
         <div class="card-deck flex-row" style="min-width: 120%;">
         <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
@@ -43,15 +29,13 @@
             <p>{{ page }}</p>
             <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
         {% elif page > 1 %}
-            <a class="btn btn-outline-info mb-4" >First</a>
-            <a class="btn btn-outline-info mb-4" >Previous</a>
-            <a class="btn btn-outline-info mb-4" >Next</a>
+            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=1 %}">First</a>
+            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'-1' %}">Previous</a>
+            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
         {% endif %}
     {% else %}
         <p>error</p>
     {% endif %}
 
-
-    <!--</div>-->
 </div> 
 {% endblock content %}
