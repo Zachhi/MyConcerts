@@ -1,36 +1,10 @@
 from django.shortcuts import render
 import requests
 from datetime import date
-'''
-post = [
-    {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'August 27, 2018'
-    },
-    {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted:': 'August 28, 2018'
-    }
-]
+import urllib
 
-def home(request):
-    response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json?classificationName=music&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=200') 
-    # try changing p = 2!!!!!!!!!!!!! on line 12
-    # super easy pagination-type querying 
-    concerts = response.json()
-    concerts = concerts["_embedded"]
-    events = concerts["events"]
-    return render(request, "landing/home.html", {"events": events})
 
-    context = {
-        'posts': post
-    }
-    return render(request, 'landing/home.html', context)
-'''
+
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
@@ -38,7 +12,7 @@ def login_home(request):
 def home(request, page): 
 
     events = ticket_master_request(page=page)
-    return render(request, "landing/home.html", {"events": events, "page": page})
+    return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
 def ticket_master_request(genre = '', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25'):
@@ -100,3 +74,18 @@ def ticket_master_request(genre = '', city = '', page = 1, start_date = date.tod
 
 def about(request):
     return render(request, 'landing/about.html', {'title':'About'}) 
+
+def detail(request):
+    event = {}
+    event["name"] = request.GET.get("name")
+    event["image"] = request.GET.get("image")
+    event["city"] = request.GET.get("city")
+    print(event["city"])
+    event["state"] = request.GET.get("state")
+    event["min_price"] = request.GET.get("min_price")
+    event["max_price"] = request.GET.get("max_price")
+    event["url"] = request.GET.get("url")
+    #event = urllib.parse.urlparse(data)
+    #print("event:", event)
+    return render(request, "landing/detail.html", {"event": event})
+

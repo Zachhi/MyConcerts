@@ -1,4 +1,5 @@
 {% extends "landing/base.html" %}
+{% load custom_tags %}
 
 {% block content %}
 {% if events != "error" %}
@@ -7,7 +8,7 @@
         <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
             
             {% for x in events %}
-            <a href="{{ x.url }}" class="cardHelp cardMargin" >
+            <a href="{% url 'landing-detail' %}?{{x|get_encoded_dict}}" class="cardHelp cardMargin" >
                 <div class="card h-100 cardHelp cardBorder" style="width: 15em; height: 15em;">
                     <img class="card-img-top imgBorder" src="{{ x.image }}" alt="Card image cap">
                     <div class="card-body">
@@ -33,9 +34,10 @@
             <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'-1' %}">Previous</a>
             <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
         {% endif %}
-    {% else %}
+    </div>
+{% else %}
         <p>error</p>
-    {% endif %}
+{% endif %}
 
-</div> 
+ 
 {% endblock content %}
