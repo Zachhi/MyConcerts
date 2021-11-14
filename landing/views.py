@@ -1,17 +1,44 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 import requests
-from landing.credentials import CLIENT_ID, CLIENT_SECRET
+from landing.credentials import CLIENT_ID, CLIENT_SECRET, SCOPE
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
 from datetime import date
 
+# Spotify API User Authentification - sp is an OAuth Object
+sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
 
-def get_spotify_info(): #carefull will call authetentification each time its called.. so we really woudl like to only call once
-    SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/', scope=SCOPE))
-    topartists = sp.current_user_top_artists(limit=20, time_range='long_term')
-    toptracks = sp.current_user_top_tracks(limit=20, time_range='long_term')
+def spotify_auth(request):
+    # SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
+
+    # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
+
+    # results = sp.current_user_top_artists(limit=20, time_range='long_term')
+    # print(results['items']['artist'])
+    auth_url = sp.get_authorize_url()
+    return redirect(auth_url)
+    #return render(request, 'landing/spotifyauth'
+
+#provides a callback from spotify_auth. Also used to parse out token and to pass spotipy object to landing/home
+def callback(request):
+    url = request.build_absolute_uri()
+    code = sp.parse_response_code(url)
+    token = sp.get_access_token(code)
+    token_info = sp.get_cached_token()
+
+    request.session["token_ID"] = token_info["access_token"]
+    request.session["token"] = token_info
+    return redirect('landing-home')
+    #render(request, 'landing-home', {'user':user})
+
+
+def get_spotify_info(request): #carefull will call authetentification each time its called.. so we really woudl like to only call once
+    user = spotipy.client.Spotify(auth=request.session['token_ID'])
+    #user = spotipy.client.Spotify(sp)
+    topartists = user.current_user_top_artists(limit=20, time_range='long_term')
+    toptracks = user.current_user_top_tracks(limit=20, time_range='long_term')
 
     try:
         toptrack = toptracks['items'][0]['name'] #try catch block here in case the user does not have any data
@@ -46,30 +73,27 @@ def get_spotify_info(): #carefull will call authetentification each time its cal
 
 #userlisttop = get_spotify_info()
 
-get_spotify_info()
+#get_spotify_info()
 
 
 def home(request):
     #print(userlisttop["topartists"])
     # try changing p = 2!!!!!!!!!!!!! on line above
     # super easy pagination-type querying 
+    userlisttop = get_spotify_info(request)
+    top_artist = userlisttop["topartists"][0]
+    print(top_artist)
+    
     events = ticket_master_request()
     
     return render(request, "landing/home.html", {"events": events})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
 
-
 def about(request):
     return render(request, 'landing/about.html', {'title':'About'}) 
+    
 
-def spotify_auth(request):
-    SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
-
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
-
-    results = sp.current_user_top_artists(limit=20, time_range='long_term')
-    print(results['items']['artist'])
 
 
 def ticket_master_request(genre = 'Country', city = 'Austin', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25'):
