@@ -1,0 +1,9 @@
+{% extends "landing/base.html" %}
+
+{% block content %}
+    <img class="imgBorder" src="{{ event.image }}">
+    <h1 style="color:white">{{ event.name }}</h1>
+    <h5 style="font-size: .7em; color: white;">{{ event.city }}, {{ event.state }}</h5>
+    <p style="font-size: .8em; color: rgb(100, 199, 61);">${{ event.min_price }} - ${{ event.max_price }}</p>
+    <a href="{{ event.url }}" class="cardHelp cardMargin" >Link to Buy Tickets</a>
+{% endblock content %}
