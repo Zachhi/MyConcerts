@@ -11,15 +11,18 @@ import urllib
 # Spotify API User Authentification - sp is an OAuth Object
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
 
-def spotify_auth(request):
+def spotify_auth(request, has_spotify):
     # SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
 
     # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
 
     # results = sp.current_user_top_artists(limit=20, time_range='long_term')
     # print(results['items']['artist'])
-    auth_url = sp.get_authorize_url()
-    return redirect(auth_url)
+    if has_spotify == 'yes':
+        auth_url = sp.get_authorize_url()
+        return redirect(auth_url)
+    else:
+        return redirect('landing-home', page='1')
     #return render(request, 'landing/spotifyauth'
 
 #provides a callback from spotify_auth. Also used to parse out token and to pass spotipy object to landing/home
@@ -30,8 +33,10 @@ def callback(request):
     token_info = sp.get_cached_token()
 
     request.session["token_ID"] = token_info["access_token"]
+    print(request.session['token_ID'])
     request.session["token"] = token_info
-    return redirect('landing-home')
+    return redirect('landing-home', page='1')
+    #return redirect('login')
     #render(request, 'landing-home', {'user':user})
 
 
