@@ -1,4 +1,13 @@
 {% extends "landing/base.html" %}
 {% block content %}
-    <h1> HOME PAGE </h1>
+    <!-- Card -->
+    <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+        <div class="container">
+          <h1 class="display-1 text-warning"><b><i class="fas fa-guitar"></i>MyConcerts</b></h1>
+          <div class="d-flex p-4 justify-content-center align-items-center">
+              <a class="btn btn-outline-warning m-3" href="{% url 'login' %}">Login</a>
+              <a class="btn btn-outline-warning m-3" href="{% url 'register' %}">Register</a>
+          </div>
+        </div>
+    </div>
 {% endblock content %}
