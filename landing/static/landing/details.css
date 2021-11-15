@@ -406,3 +406,7 @@ p {
 b, strong {
     font-weight: 700 !important;
 }
+
+.starred {
+    color:yellow;
+}

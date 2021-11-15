@@ -9,7 +9,7 @@
         <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
             
             {% for x in events %}
-            <a href="{% url 'landing-detail' %}?{{x|get_encoded_dict}}" class="cardHelp cardMargin" >
+            <a href="{% url 'landing-detail' %}?{{x|get_encoded_dict}}" class="cardHelp cardMargin">
                 <div class="card h-100 cardHelp cardBorder" style="width: 15em; height: 15em;">
                     <img class="card-img-top imgBorder" src="{{ x.image }}" alt="Card image cap">
                     <div class="card-body">
@@ -21,6 +21,7 @@
                             <p class="card-text cardHelp" style="font-size: .8em; color: rgba(0, 0, 0, 0.699);">{{ x.date }}</p>
                             <p class="card-text cardHelp" style="font-size: .8em; color: rgb(100, 199, 61);">${{ x.min_price }} - ${{ x.max_price }}</p>
                         </div>
+                        
                     </div>
                 </div> 
             </a>

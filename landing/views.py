@@ -1,22 +1,22 @@
+from django.contrib.auth.forms import UsernameField
 from django.shortcuts import render
 import requests
 from datetime import date
 import datetime
 import urllib
-
-
-
+# from django.contrib.auth.models import User
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
 
-def home(request, page): 
-
+def home(request, page):
+    print("home") 
+    print(request.user)
     events = ticket_master_request(page=page)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(genre = 'Music', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25'):
+def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25'):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=' + str(page)
     if(city != ''):
         url = url + '&city=' + city
@@ -27,7 +27,7 @@ def ticket_master_request(genre = 'Music', city = '', page = 1, start_date = dat
     if(end_date != ''):
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
 
-    print(url)
+    # print(url)
     response = requests.get(url) 
 
     concerts = response.json()
@@ -196,7 +196,9 @@ def ticket_master_request(genre = 'Music', city = '', page = 1, start_date = dat
         except:
             dictionary["homepage"] = "Unknown"
 
-        print(dictionary["instagram"])
+        # print(dictionary["instagram"])
+        dictionary["starred"] = "true"
+        print("DICTIONARY", dictionary["starred"])
 
         events.append(dictionary)
 
@@ -236,8 +238,9 @@ def detail(request):
     event["facebook"] = request.GET.get("facebook")
     event["youtube"] = request.GET.get("youtube")
     event["homepage"] = request.GET.get("homepage")
+    event["starred"] = request.GET.get("starred")
     #event = urllib.parse.urlparse(data)
-    #print("event:", event)
+    print("event:", event["starred"])
     return render(request, "landing/detail.html", {"event": event})
 
 

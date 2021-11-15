@@ -4,13 +4,18 @@
 <link rel="stylesheet" type="text/css" href="{% static 'landing/details.css' %}">
 {% endblock %}
 {% block content %}
-
+    
     <div class="col-md-5">
         <div class="concert-info-box mt-0">
+            <form><input type="button" value="Back" onclick="history.back()"></form>
+            <br>
             <h1 class="concert-title" style="color:navy">{{ event.name }}</h1>
             <br>
             <p>{{ event.venue }}</p>
             <p>{{ event.city }}, {{ event.state }}</p>
+            <button id="star-btn" class="btn starred"><i class="fas fa-star"></i></button>
+            
+
         </div>
         <div class="concert-info-box">
             <p><b>Date:</b> {{ event.date }}</p>
@@ -57,11 +62,8 @@
                 
             </p>
         </div>
-        <div class="concert-info-box text-center">
-            <form><input type="button" value="Back" onclick="history.back()"></form>
-        </div>
+        
     </div>
-
     <div class="col-md-7">
         <img alt="concert-image" class="img-fluid rounded" src="{{ event.image }}">
         <div class="concert-info-box">
