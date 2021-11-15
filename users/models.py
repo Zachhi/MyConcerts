@@ -5,4 +5,7 @@ from django.db import models
 
 class SpotifyCred(models.Model):
     has_spotify = models.CharField(max_length=5)
-    username = models.CharField(max_length=50) #reference 
+    username = models.CharField(max_length=50) 
+
+    def __str__(self):
+        return '{}'.format(self.has_spotify)

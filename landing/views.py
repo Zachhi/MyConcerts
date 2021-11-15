@@ -5,6 +5,7 @@ from landing.credentials import CLIENT_ID, CLIENT_SECRET, SCOPE
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
+from users.models import SpotifyCred
 from datetime import date
 import urllib
 
@@ -17,12 +18,13 @@ def spotify_auth(request):
     # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
 
     # results = sp.current_user_top_artists(limit=20, time_range='long_term')
-    # print(results['items']['artist'])
-    #if has_spotify == 'yes':
+    has_spotify = SpotifyCred.objects.get(username = request.user)
+
+    if 'yes' in str(has_spotify):
         auth_url = sp.get_authorize_url()
         return redirect(auth_url)
-    #else:
-    #    return redirect('landing-home', page='1')
+    else:
+        return redirect('landing-home', page='1')
     #return render(request, 'landing/spotifyauth'
 
 #provides a callback from spotify_auth. Also used to parse out token and to pass spotipy object to landing/home
@@ -42,40 +44,30 @@ def callback(request):
 
 def get_spotify_info(request): #carefull will call authetentification each time its called.. so we really woudl like to only call once
     user = spotipy.client.Spotify(auth=request.session['token_ID'])
-    #user = spotipy.client.Spotify(sp)
     topartists = user.current_user_top_artists(limit=20, time_range='long_term')
     toptracks = user.current_user_top_tracks(limit=20, time_range='long_term')
 
-    try:
-        toptrack = toptracks['items'][0]['name'] #try catch block here in case the user does not have any data
-    except: 
-        print("User does not have any toptracks")
-        return()
-    
-    try:
-        topartist = topartists['items'][0]['genres']
-    except: 
-        print("User does not have any top artists")
-        return()    
-
-    user_top = {}
-    toptracks_name = []
+    toptracks_artist = [] 
     topartists_name = []
     topgenres_name = []
+
+
+    user_top = {}
+
+    #print(toptracks['items'][0]['album']['artists'][0]['name']) # this gets the name of the top track's artist
     
-    for i in range(20):
-        toptracks_name.append(toptracks['items'][i]['name'])
-    user_top["toptracks"] = toptracks_name
+    for i in range(len(toptracks['items'])):
+        toptracks_artist.append(toptracks['items'][i]['album']['artists'][0]['name'])
+    user_top["toptracks_artist"] = toptracks_artist
     
-    for i in range(20):
+
+    for i in range(len(topartists['items'])):
         topartists_name.append(topartists['items'][i]['name'])
-    user_top["topartists"] = topartists_name
-    
-    for i in range(20):
         topgenres_name.append(topartists['items'][i]['genres'])
+    user_top["topartists"] = topartists_name
     user_top["topgenres"] = topgenres_name
+
     return user_top
-    
 
 #userlisttop = get_spotify_info()
 
@@ -90,15 +82,16 @@ def login_home(request):
 def home(request, page): 
     #print(request.ID)
     userlisttop = get_spotify_info(request)
-    top_artist = userlisttop["topartists"][0]
-    print(top_artist)
+    print(userlisttop)
+    #top_tracks = userlisttop["toptracks"][0]
+    #print(top_tracks)
 
     events = ticket_master_request(page=page)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
 def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25'):
-    url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&page=' + str(page)
+    url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     if(city != ''):
         url = url + '&city=' + city
     if(genre != ''):

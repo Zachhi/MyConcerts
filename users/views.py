@@ -18,7 +18,7 @@ def register(request):
             s1.save()
             #print(spotify)
             messages.success(request, f'Account created for {username}!')
-            return redirect('landing-home', page=1)     #first of all havent tested if the has_spotify was actually passed to the template.. and theres a problem with a user who is just logging in
+            return redirect('login')     #first of all havent tested if the has_spotify was actually passed to the template.. and theres a problem with a user who is just logging in
                                                                 #... a user who is logging in and already has registered before wouldn't get that flag set for has_spotify.. so we need to store it
 
     else:
