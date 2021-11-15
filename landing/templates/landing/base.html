@@ -23,7 +23,7 @@
     {% endif %}
 </head>
 
-<body>
+<body class="landing_bg">
     <header class="site-header">
         <nav class="navbar navbar-expand-md navbar-dark bg-navbar fixed-top">
             <div class="container">
@@ -65,24 +65,13 @@
             {% endfor %}
             {% endif %}
             {% block content %}{% endblock %}
-            <!-- </div> -->
-            <!-- {% if title == "Landing"%}
-                <div class="col-md-4">
-                    <div class="content-section">
-                        <h3>Filters</h3>
-                        <p class='text-muted'>This is where our filters will go
-                        <ul class="list-group">
-                            <li class="list-group-item list-group-item-light">By Date</li>
-                            <li class="list-group-item list-group-item-light">By Genre</li>
-                            <li class="list-group-item list-group-item-light">By Distance</li>
-                            <li class="list-group-item list-group-item-light">By Price</li>
-                        </ul>
-                        </p>
-                    </div>
-                </div>
-            {% endif %} -->
         </div>
     </main>
+    
+    <footer>
+        <hr>
+        <p>MyConcerts copyright</p>
+    </footer>
     
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -96,9 +85,4 @@
     <script src="https://kit.fontawesome.com/ade403182b.js" crossorigin="anonymous"></script>
 
 </body>
-<footer>
-    <hr>
-    <p>MyConcerts copyright</p>
-</footer>
-
 </html>
