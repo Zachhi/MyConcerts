@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib.auth.forms import UsernameField
+from django.shortcuts import render
 import requests
 from landing.credentials import CLIENT_ID, CLIENT_SECRET, SCOPE
 import spotipy
@@ -7,6 +9,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
 from users.models import SpotifyCred
 from datetime import date
+import datetime
 import urllib
 
 # Spotify API User Authentification - sp is an OAuth Object
@@ -101,7 +104,7 @@ def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = d
     if(end_date != ''):
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
 
-    print(url)
+    # print(url)
     response = requests.get(url) 
 
     concerts = response.json()
@@ -122,7 +125,9 @@ def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = d
         dictionary["image"] = e["images"][0]["url"]
         try: 
             if e["dates"]["start"]["dateTBA"] == False:
-                dictionary["date"] = e["dates"]["start"]["localDate"]
+                api_date = e["dates"]["start"]["localDate"]
+                formatted_date = datetime.datetime.strptime(api_date, '%Y-%m-%d').strftime('%B %d, %Y')
+                dictionary["date"] = formatted_date
             else:
                 dictionary["date"] = "TBA"
         except:
@@ -130,7 +135,10 @@ def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = d
         
         try: 
             if(e["dates"]["start"]["timeTBA"] == False):
-                dictionary["time"] = e["dates"]["start"]['localTime']
+                api_time = e["dates"]["start"]['localTime']
+                formatted_time = datetime.datetime.strptime(api_time, '%H:%M:%S').strftime('%I:%M%p')
+                dictionary["time"] = formatted_time
+                
             else: 
                 dictionary["time"] = "TBA"
         except:
@@ -141,12 +149,12 @@ def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = d
         dictionary["state"] = e["_embedded"]["venues"][0]["state"]["name"]
         
         try:
-            dictionary["min_price"] = e["priceRanges"][0]["min"]
+            dictionary["min_price"] = int(e["priceRanges"][0]["min"])
         except: 
             dictionary["min_price"] = "TBA"
 
         try:
-            dictionary["max_price"] = e["priceRanges"][0]["max"]
+            dictionary["max_price"] = int(e["priceRanges"][0]["max"])
         except: 
             dictionary["max_price"] = "TBA"
 
@@ -157,13 +165,18 @@ def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = d
             dictionary["genres"] = "Unknown"
 
         try:
-            dictionary["subgenre"] = e["classifications"][0]["subgenre"]["name"]
+            dictionary["subgenre"] = e["classifications"][0]["subGenre"]["name"]
         except:
             dictionary["subgenre"] = "Unknown"
 
-        if(e["sales"]["public"]["startTBA"] == False or e["sales"]["public"]["startTBD"] == False ):
-            dictionary["salesStart"] = e["sales"]["public"]["startDateTime"]
-        else:
+        try:
+            if(e["sales"]["public"]["startTBA"] == False or e["sales"]["public"]["startTBD"] == False ):
+                api_sales = e["sales"]["public"]["startDateTime"]
+                formatted_sales = datetime.datetime.strptime(api_sales, '%Y-%m-%dT%H:%M:%SZ').strftime('%B %d, %Y, %I:%M%p')
+                dictionary["salesStart"] = formatted_sales
+            else:
+                dictionary["salesStart"] = "TBA"
+        except:
             dictionary["salesStart"] = "TBA"
 
         # sales
@@ -236,29 +249,33 @@ def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = d
 
         # social media links
         try:
-            dictionary["instagram"] = e["_embedded"]["attractions"][0]["externalLinks"]["instagram"]
+            dictionary["instagram"] = e["_embedded"]["attractions"][0]["externalLinks"]["instagram"][0]["url"]
         except:
             dictionary["instagram"] = "Unknown"
 
         try:
-            dictionary["twitter"] = e["_embedded"]["attractions"][0]["externalLinks"]["twitter"]
+            dictionary["twitter"] = e["_embedded"]["attractions"][0]["externalLinks"]["twitter"][0]["url"]
         except:
             dictionary["twitter"] = "Unknown"
 
         try:
-            dictionary["facebook"] = e["_embedded"]["attractions"][0]["externalLinks"]["facebook"]
+            dictionary["facebook"] = e["_embedded"]["attractions"][0]["externalLinks"]["facebook"][0]["url"]
         except:
             dictionary["facebook"] = "Unknown"
 
         try:
-            dictionary["youtube"] = e["_embedded"]["attractions"][0]["externalLinks"]["youtube"]
+            dictionary["youtube"] = e["_embedded"]["attractions"][0]["externalLinks"]["youtube"][0]["url"]
         except:
             dictionary["youtube"] = "Unknown"
         
         try:
-            dictionary["homepage"] = e["_embedded"]["attractions"][0]["externalLinks"]["homepage"]
+            dictionary["homepage"] = e["_embedded"]["attractions"][0]["externalLinks"]["homepage"][0]["url"]
         except:
             dictionary["homepage"] = "Unknown"
+
+        # print(dictionary["instagram"])
+        dictionary["starred"] = "true"
+        print("DICTIONARY", dictionary["starred"])
 
         events.append(dictionary)
 
@@ -277,8 +294,30 @@ def detail(request):
     event["min_price"] = request.GET.get("min_price")
     event["max_price"] = request.GET.get("max_price")
     event["url"] = request.GET.get("url")
+    event["date"] = request.GET.get("date")
+    event["time"] = request.GET.get("time")
+    event["venue"] = request.GET.get("venue")
+    event["genres"] = request.GET.get("genres")
+    event["subgenre"] = request.GET.get("subgenre")
+    event["salesStart"] = request.GET.get("salesStart")
+    event["note"] = request.GET.get("note")
+    event["address"] = request.GET.get("address")
+    event["boxPhone"] = request.GET.get("boxPhone")
+    event["boxHours"] = request.GET.get("boxHours")
+    event["boxPayment"] = request.GET.get("boxPayment")
+    event["boxWillCall"] = request.GET.get("boxWillCall")
+    event["parking"] = request.GET.get("parking")
+    event["seating"] = request.GET.get("seating")
+    event["generalRule"] = request.GET.get("generalRule")
+    event["childRule"] = request.GET.get("childRule")
+    event["instagram"] = request.GET.get("instagram")
+    event["twitter"] = request.GET.get("twitter")
+    event["facebook"] = request.GET.get("facebook")
+    event["youtube"] = request.GET.get("youtube")
+    event["homepage"] = request.GET.get("homepage")
+    event["starred"] = request.GET.get("starred")
     #event = urllib.parse.urlparse(data)
-    #print("event:", event)
+    print("event:", event["starred"])
     return render(request, "landing/detail.html", {"event": event})
 
 

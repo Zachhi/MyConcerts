@@ -12,9 +12,10 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{% static 'landing/main.css' %}">
+    {% block extrahead %}{% endblock %}
 
     <link rel=icon href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/guitar.svg>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
     {% if title %}
     <title>MyConcerts - {{ title }}</title>
     {% else %}
@@ -55,17 +56,17 @@
     </header>
     <main role="main" class="container">
         <div class="row">
-            <div class="col-md-8">
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
-                {% block content %}{% endblock %}
+            <!-- <div class="col-md-8"> -->
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
             </div>
-            {% if title == "Landing"%}
+            {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+            <!-- </div> -->
+            <!-- {% if title == "Landing"%}
                 <div class="col-md-4">
                     <div class="content-section">
                         <h3>Filters</h3>
@@ -79,7 +80,7 @@
                         </p>
                     </div>
                 </div>
-            {% endif %}
+            {% endif %} -->
         </div>
     </main>
     
@@ -93,7 +94,12 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/ade403182b.js" crossorigin="anonymous"></script>
+    <script src="{% static 'landing/functions.js' %}"></script>
 
 </body>
+<footer>
+    <hr>
+    <p>MyConcerts copyright</p>
+</footer>
 
 </html>
