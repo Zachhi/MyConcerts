@@ -84,8 +84,14 @@ def login_home(request):
 
 def home(request, page): 
     #print(request.ID)
-    userlisttop = get_spotify_info(request)
-    print(userlisttop)
+    
+    if str(request.user) != "AnonymousUser": #someone is logged in
+        print("in here")
+        print(request.user)
+        has_spotify = SpotifyCred.objects.get(username = request.user)
+        if 'yes' in str(has_spotify):
+            userlisttop = get_spotify_info(request)
+            print(userlisttop)
     #top_tracks = userlisttop["toptracks"][0]
     #print(top_tracks)
 
