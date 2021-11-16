@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm
 #from landing.views import spotify_auth
-from users.models import SpotifyCred
+from users.models import Spotify_Notification_Cred
 
 def register(request):
     if request.method == 'POST':
@@ -14,7 +14,7 @@ def register(request):
             username = form.cleaned_data.get('username')
             spotify = form.cleaned_data.get('spotify')
             # save username into spotifycred model
-            s1 = SpotifyCred(username = username, has_spotify = spotify)
+            s1 = Spotify_Notification_Cred(username = username, has_spotify = spotify)
             s1.save()
             #print(spotify)
             messages.success(request, f'Account created for {username}!')
