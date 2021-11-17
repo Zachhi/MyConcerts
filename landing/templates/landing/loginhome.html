@@ -1,24 +1,89 @@
-{% extends "landing/base.html" %} {% block content %}
-<!-- Card -->
-<div
-  class="
-    d-flex
-    flex-column
-    min-vh-100
-    justify-content-center
-    align-items-center
-  "
->
-  <div class="container">
-    <h1 class="display-1 text-warning">
-      <b><i class="fas fa-guitar"></i>MyConcerts</b>
-    </h1>
-    <div class="d-flex p-4 justify-content-center align-items-center">
-      <a class="btn btn-outline-warning m-3" href="{% url 'login' %}">Login</a>
-      <a class="btn btn-outline-warning m-3" href="{% url 'register' %}"
-        >Register</a
-      >
-    </div>
-  </div>
-</div>
-{% endblock content %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'landing/landing.css' %}"
+    />
+    {% block extrahead %}{% endblock %} <link rel=icon
+    href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/guitar.svg>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+      integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+      crossorigin="anonymous"
+    />
+    {% if title %}
+    <title>MyConcerts - {{ title }}</title>
+    {% else %}
+    <title>MyConcerts</title>
+    {% endif %}
+  </head>
+  <!-- Card -->
+  <body class="landing_bg d-flex justify-content-center align-items-center">
+    <main role="main" class="d-flex justify-content-center p-3">
+      <div class="row">
+        <div
+          class="
+            d-flex
+            flex-column
+            min-vh-100
+            justify-content-center
+            align-items-center
+          "
+        >
+          <div class="container">
+            <h1 class="display-1 text-warning">
+              <b><i class="fas fa-guitar"></i>MyConcerts</b>
+            </h1>
+            <div class="d-flex p-4 justify-content-center align-items-center">
+              <a class="btn btn-warning m-3" href="{% url 'login' %}"
+                >Login</a
+              >
+              <a class="btn btn-warning m-3" href="{% url 'register' %}"
+                >Register</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://kit.fontawesome.com/ade403182b.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
