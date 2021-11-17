@@ -3,11 +3,10 @@
 
 {% block content %}
 {% if events != "error" %}
-<div class="col-md-8">
-    <div class="container-fluid">
-        <div class="card-deck flex-row" style="min-width: 120%;">
+<div class="col-md-9">
+    <div class="">
+        <div class="card-deck d-flex justify-content-center">
         <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
-            
             {% for x in events %}
             <a href="{% url 'landing-detail' %}?{{x|get_encoded_dict}}" class="cardHelp cardMargin">
                 <div class="card h-100 cardHelp cardBorder" style="width: 15em; height: 15em;">
@@ -27,17 +26,20 @@
             </a>
             {% endfor %}
         </div>
+        <div class="d-flex justify-content-center">
 
-        {% if page == 1 %}
-            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
-        {% elif page > 1 %}
-            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=1 %}">First</a>
-            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'-1' %}">Previous</a>
-            <a class="btn btn-outline-info mb-4" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
-        {% endif %}
+            {% if page == 1 %}
+                <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
+            {% elif page > 1 %}
+                <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=1 %}">First</a>
+                <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'-1' %}">Previous</a>
+                <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
+            {% endif %}
+        </div>
+
     </div>
 </div>
-<div class="col-md-4">
+<div class="col-md-3">
     <div class="content-section">
         <h3>Filters</h3>
         <p class='text-muted'>This is where our filters will go
