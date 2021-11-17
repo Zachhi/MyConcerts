@@ -7,7 +7,7 @@ from landing.credentials import CLIENT_ID, CLIENT_SECRET, SCOPE
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
-from users.models import SpotifyCred
+from users.models import Spotify_Notification_Cred
 from datetime import date
 import datetime
 import urllib
@@ -21,9 +21,11 @@ def spotify_auth(request):
     # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
 
     # results = sp.current_user_top_artists(limit=20, time_range='long_term')
-    has_spotify = SpotifyCred.objects.get(username = request.user)
+    has_spotify = str(Spotify_Notification_Cred.objects.get(username = request.user))
+    has_spotify = has_spotify.split(',')
 
-    if 'yes' in str(has_spotify):
+    #if 'yes' in str(has_spotify):
+    if('yes' in has_spotify[0]):
         auth_url = sp.get_authorize_url()
         return redirect(auth_url)
     else:
@@ -88,7 +90,7 @@ def home(request, page):
     if str(request.user) != "AnonymousUser": #someone is logged in
         print("in here")
         print(request.user)
-        has_spotify = SpotifyCred.objects.get(username = request.user)
+        has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
         if 'yes' in str(has_spotify):
             userlisttop = get_spotify_info(request)
             print(userlisttop)
@@ -99,7 +101,7 @@ def home(request, page):
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25'):
+def ticket_master_request(genre = '', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Mendes'):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     if(city != ''):
         url = url + '&city=' + city
@@ -109,8 +111,10 @@ def ticket_master_request(genre = 'Country', city = '', page = 1, start_date = d
         url = url + '&startDateTime=' + start_date + 'T00:00:00Z'
     if(end_date != ''):
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
+    if(search != ''):
+        url = url + '&keyword=' + search 
 
-    # print(url)
+    print(url)
     response = requests.get(url) 
 
     concerts = response.json()
