@@ -10,3 +10,10 @@ class Spotify_Notification_Cred(models.Model):
 
     def __str__(self):
         return '{},{}'.format(self.has_spotify, self.notifications)
+
+class Starred_Concerts(models.Model):
+    username = models.CharField(max_length=50) 
+    concert_id = models.CharField(max_length=100)
+
+    def __str__(self):
+        return '{}'.format(self.concert_id)
