@@ -44,10 +44,21 @@
         <h3>Filters</h3>
         <p class='text-muted'>This is where our filters will go
         <ul class="list-group">
-            <li class="list-group-item list-group-item-light"><button id="date" class = "btn filterBtn" onclick = "filterTiles('date')">By Date</button></li>
-            <li class="list-group-item list-group-item-light"><button id="distance" class = "btn filterBtn" onclick = "filterTiles('distance')">By Distance</button></li>
-            <li class="list-group-item list-group-item-light"><button id="price" class = "btn filterBtn" onclick = "filterTiles('price')">By Price</button></li>
+            <form>
+                <label for="startdate">Start Date</label>
+                <input type="text" id="startdate" name="startdate"> <!---how can we deafult text  box to show form for input i.e YYYY-MM-DD?-->
+                <label for="enddate">End Date</label>
+                <input type="text" id="enddate" name="enddate">
+                <input type="submit" value="Submit">
+            </form>
+            <!-- <li class="list-group-item list-group-item-light"><button id="start date - end data" class = "btn filterBtn" onclick = "filterTiles('date')">YYYY-MM-DD</button></li>
+            <li class="list-group-item list-group-item-light"><button id="start date - end data" class="btn filterBtn" onclick="filterTiles('date')">YYYY-MM-DD</button></li> -->
+            <li class="list-group-item list-group-item-light"><button id="city" class = "btn filterBtn" onclick = "filterTiles('distance')">By City</button></li>
+            <!--<li class="list-group-item list-group-item-light"><button id="price" class = "btn filterBtn" onclick = "filterTiles('price')">By Price</button></li>-->
             <li class="list-group-item list-group-item-light"><button id="genre" class = "btn filterBtn" onclick = "filterTiles('genre')">By Genre</button></li>
+            <li class="list-group-item list-group-item-light"><button id="genre" class="btn filterBtn" onclick="filterTiles('genre')">Starred Concerts</button></li>
+            <li class="list-group-item list-group-item-light"><button id="genre" class="btn filterBtn" onclick="filterTiles('genre')">Unstarred Concerts</button></li>
+            <li class="list-group-item list-group-item-light"><button id="genre" class="btn filterBtn"onclick="filterTiles('genre')">Recommended from Spotify</button></li>
         </ul>
         </p>
     </div>
