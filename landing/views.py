@@ -79,7 +79,10 @@ def get_spotify_info(request): #carefull will call authetentification each time 
 #get_spotify_info()
 
 
-
+#def updateEvents(request, page, genre, city, page1, start_date, end_date, search):
+#    print("hello")
+#    events = ticket_master_request(genre, city, page1, start_date, end_date, search)
+#    return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
@@ -97,11 +100,11 @@ def home(request, page):
     #top_tracks = userlisttop["toptracks"][0]
     #print(top_tracks)
 
-    events = ticket_master_request(page=page)
+    events = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '2022-12-25', 'op')
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(genre = '', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Mendes'):
+def ticket_master_request(genre, city, page, start_date, end_date, search):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     if(city != ''):
         url = url + '&city=' + city
