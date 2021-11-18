@@ -185,3 +185,8 @@ a:hover {
 /* * {
   border: 1px solid red;
 } */
+
+.filterBtn {
+  background-color: white;
+  color: var(--t2);
+}
