@@ -15,11 +15,11 @@
         <p>{{ event.venue }}</p>
         <p>{{ event.city }}, {{ event.state }}</p>
         {% if event.starred == "true" %}
-        <a id="star-btn" style="color:yellow" class="btn starred"
+        <a id="star-btn" class="btn starred text-warning"
             href="{% url 'remove_star'%}?{{event|get_encoded_dict}}"><i class="fas fa-star"></i></a>
         {% else %}
-        <a id="star-btn" style="color:grey" class="btn starred" href="{% url 'add_star'%}?{{event|get_encoded_dict}}"><i
-                class="fas fa-star"></i></a>
+        <a id="star-btn" class="btn starred text-muted"
+            href="{% url 'add_star'%}?{{event|get_encoded_dict}}"><i class="fas fa-star"></i></a>
         {% endif %}
     </div>
     <div class="concert-info-box">
