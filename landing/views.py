@@ -16,11 +16,6 @@ import urllib
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
 
 def spotify_auth(request):
-    # SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
-
-    # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
-
-    # results = sp.current_user_top_artists(limit=20, time_range='long_term')
     has_spotify = str(Spotify_Notification_Cred.objects.get(username = request.user))
     has_spotify = has_spotify.split(',')
 
@@ -29,7 +24,7 @@ def spotify_auth(request):
         auth_url = sp.get_authorize_url()
         return redirect(auth_url)
     else:
-        return redirect('landing-home', page='1')
+        return redirect('landing-home', page='0')
     #return render(request, 'landing/spotifyauth'
 
 #provides a callback from spotify_auth. Also used to parse out token and to pass spotipy object to landing/home
@@ -42,12 +37,12 @@ def callback(request):
     request.session["token_ID"] = token_info["access_token"]
     print(request.session['token_ID'])
     request.session["token"] = token_info
-    return redirect('landing-home', page='1')
+    return redirect('landing-home', page='0')
     #return redirect('login')
     #render(request, 'landing-home', {'user':user})
 
 
-def get_spotify_info(request): #carefull will call authetentification each time its called.. so we really woudl like to only call once
+def get_spotify_info(request): 
     user = spotipy.client.Spotify(auth=request.session['token_ID'])
     topartists = user.current_user_top_artists(limit=20, time_range='long_term')
     toptracks = user.current_user_top_tracks(limit=20, time_range='long_term')
@@ -58,8 +53,6 @@ def get_spotify_info(request): #carefull will call authetentification each time 
 
 
     user_top = {}
-
-    #print(toptracks['items'][0]['album']['artists'][0]['name']) # this gets the name of the top track's artist
     
     for i in range(len(toptracks['items'])):
         toptracks_artist.append(toptracks['items'][i]['album']['artists'][0]['name'])
@@ -74,36 +67,41 @@ def get_spotify_info(request): #carefull will call authetentification each time 
 
     return user_top
 
-#userlisttop = get_spotify_info()
-
-#get_spotify_info()
-
-
-
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
 
-def home(request, page): 
-    #print(request.ID)
-    
-    user = request.user
+def get_starred_concerts(user='', page=0):
+    ids = list()
+    for a_concert in Starred_Concerts.objects.filter(username=user):
+        ids.append(str(a_concert))
+    events  = list()
+    for id in ids:
+        event = ticket_master_request(user=user, page=page, id=id)
+        if event == "error":
+            return "No more starred concerts"
+        events.append(event[0])
+    return events
 
-    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'):
-        #print("here")
+
+
+def home(request, page): 
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
         has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
         if 'yes' in str(has_spotify):
             userlisttop = get_spotify_info(request)
-            #print(userlisttop)
-    #top_tracks = userlisttop["toptracks"][0]
-    #print(top_tracks)
 
-    events = ticket_master_request(user=user, page=page)
+    user = request.user 
+    #events = get_starred_concerts(user, page)
+    events = ticket_master_request(user, page=page)
+    #print(events)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(user, genre = '', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Mendes'):
+def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Mendes', id=''):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
+    if(id != ''):
+        url = url + '&id=' + id
     if(city != ''):
         url = url + '&city=' + city
     if(genre != ''):
@@ -114,16 +112,21 @@ def ticket_master_request(user, genre = '', city = '', page = 1, start_date = da
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
     if(search != ''):
         url = url + '&keyword=' + search 
+        
 
     print(url)
     response = requests.get(url) 
 
     concerts = response.json()
+    #print('i am here', concerts)
     try:
         concerts = concerts["_embedded"]
     except: 
+        print("ERROR")
         return("error")
     events_from_api = concerts["events"]
+    #events_from_api = concerts
+
 
 
     events = list()
