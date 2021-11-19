@@ -17,3 +17,30 @@ function changeColor() {
         console.log(btn.style.color);
     }
 }
+
+function filterTiles(filter) {
+    if (filter == "date")
+    {
+
+        /*eventsTemp = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '', 'x');
+        
+        localStorage.setItem("events", events);
+        console.log(events);
+        render(request, "landing/home.html", {"events": event, "page": page, 'title':'Landing'})
+        console.log(render);
+        */
+        updateEvents(request, page, '', '', 1, date.today().strftime("%Y-%m-%d"), '', 'x');
+    }
+    else if (filter == "distance")
+    {
+        
+    }
+    else if (filter == "price")
+    {
+
+    }
+    else if (filter == "genre")
+    {
+
+    }
+}

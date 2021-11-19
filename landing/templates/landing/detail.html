@@ -1,105 +1,114 @@
 {% extends "landing/base.html" %}
 {% load static %}
+{% load custom_tags %}
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="{% static 'landing/details.css' %}">
 {% endblock %}
 {% block content %}
-    
-    <div class="col-md-5">
-        <div class="concert-info-box mt-0">
-            <form><input type="button" value="Back" onclick="history.back()"></form>
-            <br>
-            <h1 class="concert-title" style="color:navy">{{ event.name }}</h1>
-            <br>
-            <p>{{ event.venue }}</p>
-            <p>{{ event.city }}, {{ event.state }}</p>
-            <button id="star-btn" class="btn" onclick=changeColor()><i class="fas fa-star"></i></button>
-            
 
-        </div>
-        <div class="concert-info-box">
-            <p><b>Date:</b> {{ event.date }}</p>
-            <p><b>Time:</b> {{ event.time }}</p>
-            <p><b>Address:</b> {{ event.address }} </p>
-            <p><b>Price:</b> ${{ event.min_price }} - ${{ event.max_price }}</p>
-            <p><b>Sales Start Date:</b> {{ event.salesStart }}</p>
-            <p><b>Buy Tickets:</b> <a href="{{ event.url }}"> Ticketmaster</a> </p>
-            {% if event.homepage != "Unknown" %}
-                <p><b>Artist:</b> <a href="{{ event.homepage }}"> Website</a></p>
-            {% endif %}
-            {% if event.genres != "Unknown" %}
-                <p><b>Genre:</b> {{ event.genres }}</p>
-            {% endif %}
-            {% if event.subgenre != "Unknown" and event.subgenre != event.genres %}
-                <p class="mb-0"><b>Other Genres:</b> {{ event.subgenre }}</p>
-            {% endif %}
-        </div>
-        <div class="concert-info-box">
-            {% if event.seating != "Unknown" %}
-                <p><b>Accessability:</b> {{ event.seating }}</p>
-            {% endif %}
-            {% if event.parking != "Unknown" %}
-                <p class="mb-0"><b>Parking:</b> {{ event.parking }}</p>
-            {% endif %}
-        </div>
-        <div class="concert-info-box mt-0 mb-0">
-            <p class="mb-0">
-                <span class="fw-bold mr-10 va-middle hide-mobile">Connect:</span>
-                {% if event.facebook != "Unknown" %}
-                    <a href="{{ event.facebook }}" class="btn btn-xs btn-facebook btn-circle btn-icon mr-5 mb-0"><i class="fab fa-facebook-f"></i></a>
-                {% endif %}
-                {% if event.twitter != "Unknown" %}
-                    <a href="{{ event.twitter }}" class="btn btn-xs btn-twitter btn-circle btn-icon mr-5 mb-0"><i class="fab fa-twitter"></i></a>
-                {% endif %}
-                
-                {% if event.youtube != "Unknown" %}
-                    <a href="{{ event.youtube }}" class="btn btn-xs btn-youtube btn-circle btn-icon mr-5 mb-0"><i class="fab fa-youtube"></i></a>
-                {% endif %}
-                
-                {% if event.instagram != "Unknown" %}
-                    <a href="{{ event.instagram }}" class="btn btn-xs btn-instagram btn-circle btn-icon mr-5 mb-0"><i class="fab fa-instagram"></i></a>
-                {% endif %}
-                
-            </p>
-        </div>
-        
+<div class="col-md-5">
+    <div class="concert-info-box mt-0">
+        <form><input type="button" value="Back" onclick="history.back()"></form>
+        <br>
+        <h1 class="concert-title" style="color:navy">{{ event.name }}</h1>
+        <br>
+        <p>{{ event.venue }}</p>
+        <p>{{ event.city }}, {{ event.state }}</p>
+        {% if event.starred == "true" %}
+        <a id="star-btn" style="color:yellow" class="btn starred"
+            href="{% url 'remove_star'%}?{{event|get_encoded_dict}}"><i class="fas fa-star"></i></a>
+        {% else %}
+        <a id="star-btn" style="color:grey" class="btn starred" href="{% url 'add_star'%}?{{event|get_encoded_dict}}"><i
+                class="fas fa-star"></i></a>
+        {% endif %}
     </div>
-    <div class="col-md-7">
-        <img alt="concert-image" class="img-fluid rounded" src="{{ event.image }}">
-        <div class="concert-info-box">
-            <p>
-                {% if event.note != "Unknown" %}
-                    <b>Please Note:</b> {{ event.note }}
-                {% endif %}
-            </p>
-            
-            <p>
-                <b>Box Office:</b> 
-                <br>
-                {% if event.boxPhone != "Unknown" %}
-                    <br><b>Phone:</b> {{ event.boxPhone }}
-                {% endif %}
-                {% if event.boxHours != "Unknown" %}
-                    <br><b>Hours:</b> {{ event.boxHours }}
-                {% endif %}
-                {% if event.boxPayment != "Unknown" %}
-                    <br><b>Payment:</b> {{ event.boxPayment }}
-                {% endif %}
-                {% if event.boxWillCall != "Unknown" %}
-                    <br><b>Will Call:</b> {{ event.boxWillCall }}
-                {% endif %}
-            </p>
-            <p>
-                <b>Rules and Regulations:</b> 
-                <br>
-                {% if event.generalRule != "Unknown" %}
-                    <br>{{ event.generalRule }}
-                {% endif %}
-                {% if event.childRule != "Unknown" %}
-                    <br>{{ event.childRule }}
-                {% endif %}
-            </p>
-        </div>
+    <div class="concert-info-box">
+        <p><b>Date:</b> {{ event.date }}</p>
+        <p><b>Time:</b> {{ event.time }}</p>
+        <p><b>Address:</b> {{ event.address }} </p>
+        <p><b>Price:</b> ${{ event.min_price }} - ${{ event.max_price }}</p>
+        <p><b>Sales Start Date:</b> {{ event.salesStart }}</p>
+        <p><b>Buy Tickets:</b> <a href="{{ event.url }}"> Ticketmaster</a> </p>
+        {% if event.homepage != "Unknown" %}
+        <p><b>Artist:</b> <a href="{{ event.homepage }}"> Website</a></p>
+        {% endif %}
+        {% if event.genres != "Unknown" %}
+        <p><b>Genre:</b> {{ event.genres }}</p>
+        {% endif %}
+        {% if event.subgenre != "Unknown" and event.subgenre != event.genres %}
+        <p class="mb-0"><b>Other Genres:</b> {{ event.subgenre }}</p>
+        {% endif %}
     </div>
-    
+    <div class="concert-info-box">
+        {% if event.seating != "Unknown" %}
+        <p><b>Accessability:</b> {{ event.seating }}</p>
+        {% endif %}
+        {% if event.parking != "Unknown" %}
+        <p class="mb-0"><b>Parking:</b> {{ event.parking }}</p>
+        {% endif %}
+    </div>
+    <div class="concert-info-box mt-0 mb-0">
+        <p class="mb-0">
+            <span class="fw-bold mr-10 va-middle hide-mobile">Connect:</span>
+            {% if event.facebook != "Unknown" %}
+            <a href="{{ event.facebook }}" class="btn btn-xs btn-facebook btn-circle btn-icon mr-5 mb-0"><i
+                    class="fab fa-facebook-f"></i></a>
+            {% endif %}
+            {% if event.twitter != "Unknown" %}
+            <a href="{{ event.twitter }}" class="btn btn-xs btn-twitter btn-circle btn-icon mr-5 mb-0"><i
+                    class="fab fa-twitter"></i></a>
+            {% endif %}
+
+            {% if event.youtube != "Unknown" %}
+            <a href="{{ event.youtube }}" class="btn btn-xs btn-youtube btn-circle btn-icon mr-5 mb-0"><i
+                    class="fab fa-youtube"></i></a>
+            {% endif %}
+
+            {% if event.instagram != "Unknown" %}
+            <a href="{{ event.instagram }}" class="btn btn-xs btn-instagram btn-circle btn-icon mr-5 mb-0"><i
+                    class="fab fa-instagram"></i></a>
+            {% endif %}
+
+        </p>
+    </div>
+
+</div>
+<div class="col-md-7">
+    <img alt="concert-image" class="img-fluid rounded" src="{{ event.image }}">
+    <div class="concert-info-box">
+        <p>
+            {% if event.note != "Unknown" %}
+            <b>Please Note:</b> {{ event.note }}
+            {% endif %}
+        </p>
+
+        <p>
+            <b>Box Office:</b>
+            <br>
+            {% if event.boxPhone != "Unknown" %}
+            <br><b>Phone:</b> {{ event.boxPhone }}
+            {% endif %}
+            {% if event.boxHours != "Unknown" %}
+            <br><b>Hours:</b> {{ event.boxHours }}
+            {% endif %}
+            {% if event.boxPayment != "Unknown" %}
+            <br><b>Payment:</b> {{ event.boxPayment }}
+            {% endif %}
+            {% if event.boxWillCall != "Unknown" %}
+            <br><b>Will Call:</b> {{ event.boxWillCall }}
+            {% endif %}
+        </p>
+        <p>
+            <b>Rules and Regulations:</b>
+            <br>
+            {% if event.generalRule != "Unknown" %}
+            <br>{{ event.generalRule }}
+            {% endif %}
+            {% if event.childRule != "Unknown" %}
+            <br>{{ event.childRule }}
+            {% endif %}
+        </p>
+    </div>
+</div>
+
 {% endblock content %}

@@ -9,16 +9,16 @@
         <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
             {% for x in events %}
             <a href="{% url 'landing-detail' %}?{{x|get_encoded_dict}}" class="cardHelp cardMargin">
-                <div class="card h-100 cardHelp cardBorder" style="width: 15em; height: 15em;">
+                <div class="card h-100 cardHelp cardBorder" style="width: 15.5em; height: 15em;">
                     <img class="card-img-top imgBorder" src="{{ x.image }}" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title cardHelp" style="font-size: 1.1em;">{{ x.name }}</h5>
+                        <h5 class="card-title cardHelp" style="font-size: 1em;">{{ x.name }}</h5>
                         <div class = "d-flex justify-content-between ">
                             <h5 class="card-text cardHelp alignVertical" style="font-size: .7em; color: rgba(0, 0, 0, 0.699);">{{ x.city }}, {{ x.state }}</h5>
                         </div>
                         <div class = "d-flex justify-content-between">
                             <p class="card-text cardHelp" style="font-size: .8em; color: rgba(0, 0, 0, 0.699);">{{ x.date }}</p>
-                            <p class="card-text cardHelp" style="font-size: .8em; color: rgb(100, 199, 61);">${{ x.min_price }} - ${{ x.max_price }}</p>
+                            <p class="card-text cardHelp" style="font-size: .7em; color: rgb(100, 199, 61);">${{ x.min_price }} - ${{ x.max_price }}</p>
                         </div>
                         
                     </div>
@@ -28,10 +28,10 @@
         </div>
         <div class="d-flex justify-content-center">
 
-            {% if page == 1 %}
+            {% if page == 0 %}
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
-            {% elif page > 1 %}
-                <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=1 %}">First</a>
+            {% elif page > 0 %}
+                <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=0 %}">First</a>
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'-1' %}">Previous</a>
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}">Next</a>
             {% endif %}
@@ -42,12 +42,27 @@
 <div class="col-md-3">
     <div class="content-section">
         <h3>Filters</h3>
-        <p class='text-muted'>This is where our filters will go
+        <p class='text-muted'>Leave filters you do not wish to use blank
         <ul class="list-group">
-            <li class="list-group-item list-group-item-light">By Date</li>
-            <li class="list-group-item list-group-item-light">By Genre</li>
-            <li class="list-group-item list-group-item-light">By Distance</li>
-            <li class="list-group-item list-group-item-light">By Price</li>
+            <form>
+                <label for="startdate" class="labelHelp">Start Date</label>
+                <input type="text" id="startdate" name="startdate" placeholder="YYYY / MM / DD"><br><br> <!---how can we deafult text  box to show form for input i.e YYYY-MM-DD?-->
+                <label for="enddate" class="labelHelp">End Date</label>
+                <input type="text" id="enddate" name="enddate" placeholder="YYYY / MM / DD"><br><br>
+                <label for="city" class="labelHelp">City</label><br>
+                <input type="text" id="city" name="city" placeholder="City"><br><br>
+                <label for="genre" class="labelHelp">Genre</label><br>
+                <input type="text" id="genre" name="genre" placeholder="Genre"><br><br>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="starred">
+                    <label class="form-check-label labelHelp" for="starred">Starred Concerts</label><br>
+                    <input class="form-check-input" type="checkbox" value="" id="unstarred">
+                    <label class="form-check-label labelHelp" for="unstarred">Unstarred Concerts</label><br>
+                    <input class="form-check-input" type="checkbox" value="" id="recommended">
+                    <label class="form-check-label labelHelp" for="recommended">Recommended from Spotify</label><br><br>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
         </ul>
         </p>
     </div>

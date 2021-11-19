@@ -7,7 +7,7 @@ from landing.credentials import CLIENT_ID, CLIENT_SECRET, SCOPE
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
-from users.models import Spotify_Notification_Cred
+from users.models import Spotify_Notification_Cred, Starred_Concerts
 from datetime import date
 import datetime
 import urllib
@@ -16,11 +16,6 @@ import urllib
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
 
 def spotify_auth(request):
-    # SCOPE = "user-library-read, user-top-read, user-follow-read, user-read-email, user-read-private, playlist-read-private"
-
-    # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, scope=SCOPE))
-
-    # results = sp.current_user_top_artists(limit=20, time_range='long_term')
     has_spotify = str(Spotify_Notification_Cred.objects.get(username = request.user))
     has_spotify = has_spotify.split(',')
 
@@ -29,7 +24,7 @@ def spotify_auth(request):
         auth_url = sp.get_authorize_url()
         return redirect(auth_url)
     else:
-        return redirect('landing-home', page='1')
+        return redirect('landing-home', page='0')
     #return render(request, 'landing/spotifyauth'
 
 #provides a callback from spotify_auth. Also used to parse out token and to pass spotipy object to landing/home
@@ -42,12 +37,12 @@ def callback(request):
     request.session["token_ID"] = token_info["access_token"]
     print(request.session['token_ID'])
     request.session["token"] = token_info
-    return redirect('landing-home', page='1')
+    return redirect('landing-home', page='0')
     #return redirect('login')
     #render(request, 'landing-home', {'user':user})
 
 
-def get_spotify_info(request): #carefull will call authetentification each time its called.. so we really woudl like to only call once
+def get_spotify_info(request): 
     user = spotipy.client.Spotify(auth=request.session['token_ID'])
     topartists = user.current_user_top_artists(limit=20, time_range='long_term')
     toptracks = user.current_user_top_tracks(limit=20, time_range='long_term')
@@ -58,8 +53,6 @@ def get_spotify_info(request): #carefull will call authetentification each time 
 
 
     user_top = {}
-
-    #print(toptracks['items'][0]['album']['artists'][0]['name']) # this gets the name of the top track's artist
     
     for i in range(len(toptracks['items'])):
         toptracks_artist.append(toptracks['items'][i]['album']['artists'][0]['name'])
@@ -74,35 +67,68 @@ def get_spotify_info(request): #carefull will call authetentification each time 
 
     return user_top
 
-#userlisttop = get_spotify_info()
-
-#get_spotify_info()
-
-
-
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
 
+def get_starred_concerts(user='', page=0):
+    ids = list()
+    for a_concert in Starred_Concerts.objects.filter(username=user):
+        ids.append(str(a_concert))
+    events  = list()
+    for id in ids:
+        event = ticket_master_request(user=user, page=page, id=id)
+        if event == "error":
+            return "No more starred concerts"
+        events.append(event[0])
+    return events
+
+#def updateEvents(request, page, genre, city, page1, start_date, end_date, search):
+#    print("hello")
+#    events = ticket_master_request(genre, city, page1, start_date, end_date, search)
+#    return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
+
+
 def home(request, page): 
-    #print(request.ID)
-    
-    if str(request.user) != "AnonymousUser": #someone is logged in
-        print("in here")
-        print(request.user)
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
         has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
         if 'yes' in str(has_spotify):
             userlisttop = get_spotify_info(request)
-            print(userlisttop)
-    #top_tracks = userlisttop["toptracks"][0]
-    #print(top_tracks)
 
-    events = ticket_master_request(page=page)
+    user = request.user 
+    startdate = date.today().strftime("%Y-%m-%d")
+    enddate = '2022-12-25'
+    genre = ''
+    city = ''
+    starred = ''
+    unstarred = ''
+    if (request.method == "POST"):
+        startdate = request.POST.get('startdate')
+        enddate = request.POST.get('enddate')
+        genre = request.POST.get('genre')
+        city = request.POST.get('city')
+        checked = request.POST.getlist('check[]') #possible values for checked are 'starred' 'unstarred' 'recommended'
+        # print('starred', checked)
+
+        # print('startdate', startdate)  
+
+    events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, checkboxes=checked)
+    #print(events)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(genre = '', city = '', page = 1, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Mendes'):
+def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id='', checkboxes = []):
+#     events = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '2022-12-25', 'op')
+#     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
+#     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
+ 
+    if 'starred' in checkboxes:
+        events = get_starred_concerts(user, page)
+    else:
+#def ticket_master_request(genre, city, page, start_date, end_date, search):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
+    if(id != ''):
+        url = url + '&id=' + id
     if(city != ''):
         url = url + '&city=' + city
     if(genre != ''):
@@ -113,16 +139,21 @@ def ticket_master_request(genre = '', city = '', page = 1, start_date = date.tod
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
     if(search != ''):
         url = url + '&keyword=' + search 
+        
 
     print(url)
     response = requests.get(url) 
 
     concerts = response.json()
+    #print('i am here', concerts)
     try:
         concerts = concerts["_embedded"]
     except: 
+        print("ERROR")
         return("error")
     events_from_api = concerts["events"]
+    #events_from_api = concerts
+
 
 
     events = list()
@@ -131,6 +162,8 @@ def ticket_master_request(genre = '', city = '', page = 1, start_date = date.tod
         dictionary = {}
 
         dictionary["name"] = e["name"]
+        dictionary["id"] = e["id"]
+        #print(dictionary["id"])
         dictionary["url"] = e["url"]
         dictionary["image"] = e["images"][0]["url"]
         try: 
@@ -284,8 +317,10 @@ def ticket_master_request(genre = '', city = '', page = 1, start_date = date.tod
             dictionary["homepage"] = "Unknown"
 
         # print(dictionary["instagram"])
-        dictionary["starred"] = "true"
-        print("DICTIONARY", dictionary["starred"])
+        dictionary["starred"] = "false" # grab element from database for concert_id = event["id"], username = request.user
+        if Starred_Concerts.objects.filter(concert_id = dictionary["id"], username = user).exists():
+            dictionary["starred"] = "true"
+        #print("DICTIONARY", dictionary["starred"])
 
         events.append(dictionary)
 
@@ -299,7 +334,8 @@ def detail(request):
     event["name"] = request.GET.get("name")
     event["image"] = request.GET.get("image")
     event["city"] = request.GET.get("city")
-    print(event["city"])
+    event["id"] = request.GET.get("id")
+    #print(event["city"])
     event["state"] = request.GET.get("state")
     event["min_price"] = request.GET.get("min_price")
     event["max_price"] = request.GET.get("max_price")
@@ -327,7 +363,95 @@ def detail(request):
     event["homepage"] = request.GET.get("homepage")
     event["starred"] = request.GET.get("starred")
     #event = urllib.parse.urlparse(data)
-    print("event:", event["starred"])
+    #print("event:", event["starred"])
     return render(request, "landing/detail.html", {"event": event})
 
+def add_star(request):
+    #print("add")
+    #print("request.concert", request.GET.get("id"))
 
+    event = {}
+    event["name"] = request.GET.get("name")
+    event["image"] = request.GET.get("image")
+    event["city"] = request.GET.get("city")
+    event["id"] = request.GET.get("id")
+    #print(event["city"])
+    event["state"] = request.GET.get("state")
+    event["min_price"] = request.GET.get("min_price")
+    event["max_price"] = request.GET.get("max_price")
+    event["url"] = request.GET.get("url")
+    event["date"] = request.GET.get("date")
+    event["time"] = request.GET.get("time")
+    event["venue"] = request.GET.get("venue")
+    event["genres"] = request.GET.get("genres")
+    event["subgenre"] = request.GET.get("subgenre")
+    event["salesStart"] = request.GET.get("salesStart")
+    event["note"] = request.GET.get("note")
+    event["address"] = request.GET.get("address")
+    event["boxPhone"] = request.GET.get("boxPhone")
+    event["boxHours"] = request.GET.get("boxHours")
+    event["boxPayment"] = request.GET.get("boxPayment")
+    event["boxWillCall"] = request.GET.get("boxWillCall")
+    event["parking"] = request.GET.get("parking")
+    event["seating"] = request.GET.get("seating")
+    event["generalRule"] = request.GET.get("generalRule")
+    event["childRule"] = request.GET.get("childRule")
+    event["instagram"] = request.GET.get("instagram")
+    event["twitter"] = request.GET.get("twitter")
+    event["facebook"] = request.GET.get("facebook")
+    event["youtube"] = request.GET.get("youtube")
+    event["homepage"] = request.GET.get("homepage")
+    #event["starred"] = request.GET.get("starred")
+    event["starred"] = 'true'
+    # make it redirect
+    #print(event["id"])
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'):
+        s1 = Starred_Concerts(username = request.user, concert_id = event["id"]) # how to get the current concert? 
+        s1.save()
+    print("added to table")
+    return render(request, "landing/detail.html", {"event": event}) #redirect(history.back())
+
+def remove_star(request):
+    #print("remove")
+    #print("request.concert", request.GET.get("id"))
+
+    event = {}
+    event["name"] = request.GET.get("name")
+    event["image"] = request.GET.get("image")
+    event["city"] = request.GET.get("city")
+    event["id"] = request.GET.get("id")
+    #print(event["city"])
+    event["state"] = request.GET.get("state")
+    event["min_price"] = request.GET.get("min_price")
+    event["max_price"] = request.GET.get("max_price")
+    event["url"] = request.GET.get("url")
+    event["date"] = request.GET.get("date")
+    event["time"] = request.GET.get("time")
+    event["venue"] = request.GET.get("venue")
+    event["genres"] = request.GET.get("genres")
+    event["subgenre"] = request.GET.get("subgenre")
+    event["salesStart"] = request.GET.get("salesStart")
+    event["note"] = request.GET.get("note")
+    event["address"] = request.GET.get("address")
+    event["boxPhone"] = request.GET.get("boxPhone")
+    event["boxHours"] = request.GET.get("boxHours")
+    event["boxPayment"] = request.GET.get("boxPayment")
+    event["boxWillCall"] = request.GET.get("boxWillCall")
+    event["parking"] = request.GET.get("parking")
+    event["seating"] = request.GET.get("seating")
+    event["generalRule"] = request.GET.get("generalRule")
+    event["childRule"] = request.GET.get("childRule")
+    event["instagram"] = request.GET.get("instagram")
+    event["twitter"] = request.GET.get("twitter")
+    event["facebook"] = request.GET.get("facebook")
+    event["youtube"] = request.GET.get("youtube")
+    event["homepage"] = request.GET.get("homepage")
+    #event["starred"] = request.GET.get("starred")
+    event["starred"] = 'false'
+    # make it redirect
+    #s1 = Starred_Concerts(username = request.user, concert_id = event["id"]) # how to get the current concert? 
+    #s1.save()
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'):
+        record = Starred_Concerts.objects.get(concert_id = event["id"], username = request.user)
+        record.delete()
+    return render(request, "landing/detail.html", {"event": event}) #redirect(history.back())
