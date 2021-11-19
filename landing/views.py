@@ -96,17 +96,35 @@ def home(request, page):
             userlisttop = get_spotify_info(request)
 
     user = request.user 
-    #events = get_starred_concerts(user, page)
-    events = ticket_master_request(user, page=page)
+    startdate = date.today().strftime("%Y-%m-%d")
+    enddate = '2022-12-25'
+    genre = ''
+    city = ''
+    starred = ''
+    unstarred = ''
+    if (request.method == "POST"):
+        startdate = request.POST.get('startdate')
+        enddate = request.POST.get('enddate')
+        genre = request.POST.get('genre')
+        city = request.POST.get('city')
+        checked = request.POST.getlist('check[]') #possible values for checked are 'starred' 'unstarred' 'recommended'
+        # print('starred', checked)
+
+        # print('startdate', startdate)  
+
+    events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, checkboxes=checked)
     #print(events)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Mendes', id=''):
+def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id='', checkboxes = []):
 #     events = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '2022-12-25', 'op')
 #     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 #     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
-
+ 
+    if 'starred' in checkboxes:
+        events = get_starred_concerts(user, page)
+    else:
 #def ticket_master_request(genre, city, page, start_date, end_date, search):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     if(id != ''):
