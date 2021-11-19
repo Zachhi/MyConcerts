@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.forms import UsernameField
@@ -71,16 +72,19 @@ def get_spotify_info(request):
 def login_home(request):
     return render(request, "landing/loginhome.html")
 
-def get_starred_concerts(user='', page=0):
+def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music'):
     ids = list()
     for a_concert in Starred_Concerts.objects.filter(username=user):
         ids.append(str(a_concert))
     events  = list()
     for id in ids:
-        event = ticket_master_request(user=user, page=page, id=id)
+        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=search)
         if event == "error":
-            return "No more starred concerts"
+            print("inside starred error")
+            continue
         events.append(event[0])
+    if len(events) == 0:
+        return "error"
     return events
 
 #def updateEvents(request, page, genre, city, page1, start_date, end_date, search):
@@ -95,38 +99,72 @@ def home(request, page):
         if 'yes' in str(has_spotify):
             userlisttop = get_spotify_info(request)
 
+    filters = {}
     user = request.user 
     startdate = date.today().strftime("%Y-%m-%d")
     enddate = '2022-12-25'
     genre = ''
     city = ''
-    starred = ''
-    unstarred = ''
-    if (request.method == "POST"):
+    search = 'Music'
+    checked = []
+    if request.method == 'GET':
+        startdate = request.GET.get('startdate')
+        if startdate is None:
+            startdate = date.today().strftime("%Y-%m-%d")
+        enddate = request.GET.get('enddate')
+        if enddate is None:
+            enddate = '2022-12-25'
+        genre = request.GET.get('genre')
+        if genre is None:
+            genre = ''
+        city = request.GET.get('city')
+        if city is None:
+            city = ''
+        search = request.GET.get('search')
+        if search == '':
+            search = 'Music'
+        if search is None:
+            search = 'Music'
+        checked = request.GET.get('checked')
+        if checked is None:
+            checked = []
+        print('starred', checked)
+    elif request.method == "POST":
         startdate = request.POST.get('startdate')
         enddate = request.POST.get('enddate')
         genre = request.POST.get('genre')
         city = request.POST.get('city')
-        checked = request.POST.getlist('check[]') #possible values for checked are 'starred' 'unstarred' 'recommended'
+        search = request.POST.get('search')
+        if search == '':
+            search = 'Music'
+        checked = request.POST.getlist('check[]') #possible values for checked are 'starred' 'recommended'
         # print('starred', checked)
 
-        # print('startdate', startdate)  
-
-    events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, checkboxes=checked)
+        # print('startdate', startdate)
+    
+    filters["startdate"] = startdate
+    filters["enddate"] = enddate
+    filters["genre"] = genre
+    filters["city"] = city
+    filters["search"] = search
+    filters["checked"] = checked
+    events = []  
+    if "starred" in checked:
+        events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+    else:
+        events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
     #print(events)
-    return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
+    return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing', "filters": filters})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id='', checkboxes = []):
+def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
 #     events = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '2022-12-25', 'op')
 #     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 #     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
- 
-    if 'starred' in checkboxes:
-        events = get_starred_concerts(user, page)
-    else:
+
 #def ticket_master_request(genre, city, page, start_date, end_date, search):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
+    print("URL", url)
     if(id != ''):
         url = url + '&id=' + id
     if(city != ''):
