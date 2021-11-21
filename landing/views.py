@@ -367,6 +367,37 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
 def about(request):
     return render(request, 'landing/about.html', {'title':'About'}) 
 
+#requests video id and thumbnail image to return to deatils page based on a keyword search
+def youtube_request(keyword=''):
+    #this request grabs top 5 results based on keyword in returns in order of most relevance. Has safeSearch set to moderate. 
+    url = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDefinition=high&key=AIzaSyBQojJu7hOV6QnJPVawxh4gVSYUsudGRyU&safeSearch=moderate&maxResults=5"
+    if keyword != '':
+        url = url + "&q=" + keyword   #form request using specified keyword
+    
+    response = requests.get(url) 
+    videos = response.json()['items']
+
+    #by default sends to details page blank ID and thumbnail if no video 
+    id = ''
+    thumbnail = ''
+    for video in videos:
+        try:
+            id = video['id']['videoId']
+            thumbnail = video['snippet']['thumbnails']['high']['url']
+        except:
+            continue #continues trying other videos in response if exception is thrown
+        else:
+            break #breaks if no exception is thrown
+    
+    #returns id and url for thumbnail to dictionary youtube_info
+    #id to be used to form href to redirect to video once thumbnail is clicked. iframe may be an option as well, will need to test more.. leaving to frontend
+    youtube_info = {}
+    youtube_info['id'] = id
+    youtube_info['thumbnail'] = thumbnail
+
+    return youtube_info
+
+
 def detail(request):
     event = {}
     event["name"] = request.GET.get("name")
@@ -400,9 +431,11 @@ def detail(request):
     event["youtube"] = request.GET.get("youtube")
     event["homepage"] = request.GET.get("homepage")
     event["starred"] = request.GET.get("starred")
+
+    youtube_info = youtube_request(event["name"])
     #event = urllib.parse.urlparse(data)
     #print("event:", event["starred"])
-    return render(request, "landing/detail.html", {"event": event})
+    return render(request, "landing/detail.html", {"event": event, "youtube_info":youtube_info})
 
 def add_star(request):
     #print("add")
