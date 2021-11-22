@@ -101,6 +101,8 @@ def home(request, page):
 
     filters = {}
     user = request.user 
+    usertop = get_spotify_info(request)
+    print(usertop['topartists'])
     startdate = date.today().strftime("%Y-%m-%d")
     enddate = '2022-12-25'
     genre = ''
@@ -372,7 +374,7 @@ def youtube_request(keyword=''):
     #this request grabs top 5 results based on keyword in returns in order of most relevance. Has safeSearch set to moderate. 
     url = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDefinition=high&key=AIzaSyBQojJu7hOV6QnJPVawxh4gVSYUsudGRyU&safeSearch=moderate&maxResults=5"
     if keyword != '':
-        url = url + "&q=" + keyword   #form request using specified keyword
+        url = url + "&q=" + keyword + "music"   #form request using specified keyword
     
     response = requests.get(url) 
     videos = response.json()['items']
@@ -432,6 +434,7 @@ def detail(request):
     event["homepage"] = request.GET.get("homepage")
     event["starred"] = request.GET.get("starred")
 
+    print(event["name"])
     youtube_info = youtube_request(event["name"])
     #event = urllib.parse.urlparse(data)
     #print("event:", event["starred"])
