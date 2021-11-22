@@ -102,7 +102,7 @@ def home(request, page):
     filters = {}
     user = request.user 
     usertop = get_spotify_info(request)
-    print(usertop['topartists'])
+    print(usertop)
     startdate = date.today().strftime("%Y-%m-%d")
     enddate = '2022-12-25'
     genre = ''
