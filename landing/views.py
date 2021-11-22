@@ -255,14 +255,14 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
                 api_sales = e["sales"]["public"]["startDateTime"]
                 formatted_sales = datetime.datetime.strptime(api_sales, '%Y-%m-%dT%H:%M:%SZ').strftime('%B %d, %Y, %I:%M%p')
                 dictionary["salesStart"] = formatted_sales
-    
+                if(datetime.datetime.strptime(dictionary["salesStart"], '%B %d, %Y, %I:%M%p').year < datetime.datetime.now().year):
+                    dictionary["salesStart"] = "TBA"
             else:
                 dictionary["salesStart"] = "TBA"
         except:
             dictionary["salesStart"] = "TBA"
 
-        if(datetime.datetime.strptime(dictionary["salesStart"], '%B %d, %Y, %I:%M%p').year < datetime.datetime.now().year):
-            dictionary["salesStart"] = "TBA"
+        
         # sales
         # please note
         try:
