@@ -43,10 +43,10 @@ def callback(request):
     #render(request, 'landing-home', {'user':user})
 
 
-def get_spotify_info(request): 
+def get_spotify_info(request): #TODO Look into how to automatically get refresh token.. 
     user = spotipy.client.Spotify(auth=request.session['token_ID'])
-    topartists = user.current_user_top_artists(limit=20, time_range='long_term')
-    toptracks = user.current_user_top_tracks(limit=20, time_range='long_term')
+    topartists = user.current_user_top_artists(limit=20, time_range='medium_term')
+    toptracks = user.current_user_top_tracks(limit=20, time_range='medium_term')
 
     toptracks_artist = [] 
     topartists_name = []
@@ -68,6 +68,31 @@ def get_spotify_info(request):
 
     return user_top
 
+def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
+    print("in spotify concerts function")
+    topartists = spotifyinfo['topartists']
+    topgenres = spotifyinfo['topgenres']
+    toptracks_artists = spotifyinfo['toptracks_artist']
+    topartists = list(set(topartists+toptracks_artists))
+    events  = list()
+    for topartist in topartists:
+        print(topartist)
+        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=topartist)
+        if event == "error":
+            print("inside topartist error")
+            continue
+        for x in range(0,len(event)):
+            events.append(event[x])
+        
+    # for topgenre in topgenres:
+    #     print(topgenre)
+    #     event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, start_date=start_date, end_date=end_date, search=search)
+    #     if event == "error":
+    #         print("inside topgenre error")
+    #         continue
+    #     for x in range(0,len(event)):
+    #         events.append(event[x])
+    return events
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
@@ -101,8 +126,8 @@ def home(request, page):
 
     filters = {}
     user = request.user 
-    usertop = get_spotify_info(request)
-    print(usertop)
+    # usertop = get_spotify_info(request)
+    # print(usertop)
     startdate = date.today().strftime("%Y-%m-%d")
     enddate = '2022-12-25'
     genre = ''
@@ -130,7 +155,7 @@ def home(request, page):
         checked = request.GET.get('checked')
         if checked is None:
             checked = []
-        print('starred', checked)
+        #print('starred', checked)
     elif request.method == "POST":
         startdate = request.POST.get('startdate')
         enddate = request.POST.get('enddate')
@@ -150,11 +175,17 @@ def home(request, page):
     filters["city"] = city
     filters["search"] = search
     filters["checked"] = checked
-    events = []  
+    events = ''  
     if "starred" in checked:
         events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        #print(events)
+    elif "recommended" in checked:
+        user_spotify_info = get_spotify_info(request)
+        events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        #print(events)
     else:
         events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        
     #print(events)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing', "filters": filters})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
