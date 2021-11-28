@@ -58,42 +58,55 @@ def get_spotify_info(request): #TODO Look into how to automatically get refresh 
     #if no top tracks 
     for i in range(len(toptracks['items'])):
         toptracks_artist.append(toptracks['items'][i]['album']['artists'][0]['name'])
-    user_top["toptracks_artist"] = toptracks_artist
     
-
     for i in range(len(topartists['items'])):
         topartists_name.append(topartists['items'][i]['name'])
+    #single unique list of topartists taken from user's top artists and user's top tracks and artists of those tracks
+    user_top["topartists"] = list(set(topartists_name + toptracks_artist)) 
+    
+
+    for i in range(0, 5): #only take top 5 genres
         topgenres_name.append(topartists['items'][i]['genres'])
-    user_top["topartists"] = topartists_name
-    user_top["topgenres"] = topgenres_name
+    topgenres_name_flat = [ item for elem in topgenres_name for item in elem] #flattens topgenres_name list
+    user_top["topgenres"] = topgenres_name_flat
+    
 
     return user_top
 
 def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
     print("in spotify concerts function")
-    topartists = spotifyinfo['topartists']
-    topgenres = spotifyinfo['topgenres']
-    toptracks_artists = spotifyinfo['toptracks_artist']
-    topartists = list(set(topartists+toptracks_artists))
+    topartists = spotifyinfo['topartists'] #list of topartists
+    topgenres = spotifyinfo['topgenres'] #list of topgenres 
+
     events  = list()
     for topartist in topartists:
-        print(topartist)
+        #print(topartist)
         event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=topartist)
         if event == "error":
             print("inside topartist error")
             continue
         for x in range(0,len(event)):
             events.append(event[x])
-        
-    # for topgenre in topgenres:
-    #     print(topgenre)
-    #     event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, start_date=start_date, end_date=end_date, search=search)
-    #     if event == "error":
-    #         print("inside topgenre error")
-    #         continue
-    #     for x in range(0,len(event)):
-    #         events.append(event[x])
-    return events
+
+    #TODO discuss with team: should any top genre be added at all for spotfy recommendations? just one?.. or only in case no artists come up.. 
+    event = ticket_master_request(user=user, page=page, id=id, genre=topgenres[0], city=city, start_date=start_date, end_date=end_date, search=search)
+    if event == "error":
+        print("inside topgenre error")
+    else:           
+        for x in range(0,len(event)):
+            events.append(event[x])
+
+    #only use top genres if no concerts returned from topartists
+    if not events: #if events is empty
+        for topgenre in topgenres:
+            print(topgenre)
+            event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, start_date=start_date, end_date=end_date, search=search)
+            if event == "error":
+                print("inside topgenre error")
+                continue
+            for x in range(0,len(event)):
+                events.append(event[x])
+    return events #TODO how to ensure events is a distinct list.. there could be case where topgenre returns a concerts already returned from topartists
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
@@ -198,7 +211,7 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
 
 #def ticket_master_request(genre, city, page, start_date, end_date, search):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
-    print("URL", url)
+    #print("URL", url)
     if(id != ''):
         url = url + '&id=' + id
     if(city != ''):
@@ -213,7 +226,7 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
         url = url + '&keyword=' + search 
         
 
-    print(url)
+    #print(url)
     response = requests.get(url) 
 
     concerts = response.json()
