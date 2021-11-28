@@ -80,14 +80,16 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
 
     events  = list()
     for topartist in topartists:
-        #print(topartist)
+        print(topartist)
+        #TODO is there a way to search on a exact keyword match here.. search=sabaton returning concerts for Saba.. user hasnt listened to saba
         event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=topartist)
         if event == "error":
-            print("inside topartist error")
+            print(topartist, "inside topartist error")
             continue
         for x in range(0,len(event)):
             events.append(event[x])
 
+    print(topgenres[0])
     #TODO discuss with team: should any top genre be added at all for spotfy recommendations? just one?.. or only in case no artists come up.. 
     event = ticket_master_request(user=user, page=page, id=id, genre=topgenres[0], city=city, start_date=start_date, end_date=end_date, search=search)
     if event == "error":
@@ -125,12 +127,6 @@ def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = 
     if len(events) == 0:
         return "error"
     return events
-
-#def updateEvents(request, page, genre, city, page1, start_date, end_date, search):
-#    print("hello")
-#    events = ticket_master_request(genre, city, page1, start_date, end_date, search)
-#    return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
-
 
 def home(request, page): 
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
