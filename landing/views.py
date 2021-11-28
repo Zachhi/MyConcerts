@@ -55,6 +55,7 @@ def get_spotify_info(request): #TODO Look into how to automatically get refresh 
 
     user_top = {}
     
+    #if no top tracks 
     for i in range(len(toptracks['items'])):
         toptracks_artist.append(toptracks['items'][i]['album']['artists'][0]['name'])
     user_top["toptracks_artist"] = toptracks_artist
