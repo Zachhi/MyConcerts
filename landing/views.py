@@ -14,7 +14,7 @@ import datetime
 import urllib
 
 # Spotify API User Authentification - sp is an OAuth Object
-sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'https://myconcerts-tamu.herokuapp.com/callback', scope=SCOPE)
+sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
 
 def spotify_auth(request):
     has_spotify = str(Spotify_Notification_Cred.objects.get(username = request.user))
