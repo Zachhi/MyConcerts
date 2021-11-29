@@ -3,7 +3,7 @@
 {% block content %}
 {% if events != "error" %}
 <div class="col-md-9">
-    <div class="">
+    <div>
         <div class="card-deck d-flex justify-content-center">
         <!--<div class="row row-cols-1 row-cols-md-3 g-4">-->
             {% for x in events %}
@@ -38,32 +38,18 @@
 
     </div>
 </div>
-<div class="col-md-3">
+<div class="col">
     <div class="content-section">
         <h3>Filters</h3>
-        <p class='text-muted'>Leave filters you do not wish to use blank</p>
+        <!-- <p class='text-muted'>Leave filters you do not wish to use blank</p> -->
         <form action="{% url 'landing-home' page=0 %}" method="POST">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="search" class="labelHelp">Search</label><br>
-                <input type="text" id="search" name="search" placeholder="Search" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="startdate" class="labelHelp">Start Date</label>
-                <input type="date" id="startdate" name="startdate" class="form-control">
-            </div>
-            <div class="form-group">
-                 <label for="enddate" class="labelHelp">End Date</label>
-                <input type="date" id="enddate" name="enddate" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="city" class="labelHelp">City</label><br>
-                <input type="text" id="city" name="city" placeholder="City" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="genre" class="labelHelp">Genre</label><br>
-                <input type="text" id="genre" name="genre" placeholder="Genre" class="form-control">
-            </div>
+            {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
+            {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
+            {% include "landing/hamburger.html" with title="End Date" id="enddate" type="date"  %}
+            {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
+            {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
+
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="check[]" value="starred" id="starred">
                 <label class="form-check-label labelHelp" for="starred">Starred Concerts</label><br>
@@ -74,12 +60,15 @@
             </div>
             <br>
             <button type="submit" class="btn btn-outline-info">Submit</button>
+            <button type="reset" class="btn btn-outline-info">Reset</button>
         </form>
     </div>
 </div>
 {% else %}
-<div class="col-md-8">
-    <p>Nothing left to Display. Go to Previous</p>
+<div class="col text-center">
+    <p>Nothing left to Display</p>
+            <!-- <form><input type="button" value="Back" onclick="history.back()"></form> -->
+        <button type="submit" class="btn btn-outline-info" onclick="history.back()">Return to Gallery</button>
 </div>
 <!-- <div class="col-md-4">
     <div class="content-section">
