@@ -12,6 +12,9 @@ from users.models import Spotify_Notification_Cred, Starred_Concerts
 from datetime import date
 import datetime
 import urllib
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 # Spotify API User Authentification - sp is an OAuth Object
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
@@ -446,6 +449,10 @@ def add_star(request):
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'):
         s1 = Starred_Concerts(username = request.user, concert_id = event["id"]) # how to get the current concert? 
         s1.save()
+    subject = 'MyConcerts: You\'re starred concert!'
+    html_message = render_to_string('landing/detail.html', {'event': event})
+    plain_message = strip_tags(html_message)
+    send_mail(subject, plain_message, 'noreply@example.com', [request.user.email], html_message=html_message)
     print("added to table")
     return render(request, "landing/detail.html", {"event": event}) #redirect(history.back())
 
