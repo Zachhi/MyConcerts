@@ -90,13 +90,15 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
             events.append(event[x])
 
     print(topgenres[0])
-    #TODO discuss with team: should any top genre be added at all for spotfy recommendations? just one?.. or only in case no artists come up.. 
-    event = ticket_master_request(user=user, page=page, id=id, genre=topgenres[0], city=city, start_date=start_date, end_date=end_date, search=search)
-    if event == "error":
-        print("inside topgenre error")
-    else:           
-        for x in range(0,len(event)):
-            events.append(event[x])
+
+    # #TODO discuss with team: should any top genre be added at all for spotfy recommendations? just one?.. or only in case no artists come up.. 
+    #was discussed decided to leave top genre out of it unless topartists returns empty
+    # event = ticket_master_request(user=user, page=page, id=id, genre=topgenres[0], city=city, start_date=start_date, end_date=end_date, search=search)
+    # if event == "error":
+    #     print("inside topgenre error")
+    # else:           
+    #     for x in range(0,len(event)):
+    #         events.append(event[x])
 
     #only use top genres if no concerts returned from topartists
     if not events: #if events is empty
