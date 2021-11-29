@@ -48,17 +48,20 @@
             align-items-center
           "
         >
-          <div class="container">
-            <h1 class="display-1 text-warning">
+          <div class="container glass px-3">
+            <h1 class="display-1 text-info">
               <b><i class="fas fa-guitar"></i>MyConcerts</b>
             </h1>
             <div class="d-flex p-4 justify-content-center align-items-center">
-              <a class="btn btn-warning m-3" href="{% url 'login' %}"
-                >Login</a
-              >
-              <a class="btn btn-warning m-3" href="{% url 'register' %}"
-                >Register</a
-              >
+              {% if user.is_authenticated %}
+              <a class="btn btn-info m-3" href="{% url 'landing-home' page=0 %}">Home</a>
+              <a class="btn btn-info m-3" href="{% url 'landing-about' %}">About</a>
+              <a class="btn btn-info m-3" href="{% url 'logout' %}">Logout</a>
+              <a class="btn btn-info m-3" href="{% url 'profile' %}">Profile</a>
+              {% else %}
+              <a class="btn btn-info m-3" href="{% url 'login' %}">Login</a>
+              <a class="btn btn-info m-3" href="{% url 'register' %}">Register</a>
+              {% endif %}
             </div>
           </div>
       </div>
