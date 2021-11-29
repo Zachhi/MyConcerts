@@ -43,10 +43,10 @@ def callback(request):
     #render(request, 'landing-home', {'user':user})
 
 
-def get_spotify_info(request): 
+def get_spotify_info(request): #TODO Look into how to automatically get refresh token.. 
     user = spotipy.client.Spotify(auth=request.session['token_ID'])
-    topartists = user.current_user_top_artists(limit=20, time_range='long_term')
-    toptracks = user.current_user_top_tracks(limit=20, time_range='long_term')
+    topartists = user.current_user_top_artists(limit=20, time_range='medium_term')
+    toptracks = user.current_user_top_tracks(limit=20, time_range='medium_term')
 
     toptracks_artist = [] 
     topartists_name = []
@@ -55,19 +55,62 @@ def get_spotify_info(request):
 
     user_top = {}
     
+    #if no top tracks 
     for i in range(len(toptracks['items'])):
         toptracks_artist.append(toptracks['items'][i]['album']['artists'][0]['name'])
-    user_top["toptracks_artist"] = toptracks_artist
     
-
     for i in range(len(topartists['items'])):
         topartists_name.append(topartists['items'][i]['name'])
+    #single unique list of topartists taken from user's top artists and user's top tracks and artists of those tracks
+    user_top["topartists"] = list(set(topartists_name + toptracks_artist)) 
+    
+
+    for i in range(0, 5): #only take top 5 genres
         topgenres_name.append(topartists['items'][i]['genres'])
-    user_top["topartists"] = topartists_name
-    user_top["topgenres"] = topgenres_name
+    topgenres_name_flat = [ item for elem in topgenres_name for item in elem] #flattens topgenres_name list
+    user_top["topgenres"] = topgenres_name_flat
+    
 
     return user_top
 
+def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
+    print("in spotify concerts function")
+    topartists = spotifyinfo['topartists'] #list of topartists
+    topgenres = spotifyinfo['topgenres'] #list of topgenres 
+
+    events  = list()
+    for topartist in topartists:
+        print(topartist)
+        #TODO is there a way to search on a exact keyword match here.. search=sabaton returning concerts for Saba.. user hasnt listened to saba
+        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=topartist)
+        if event == "error":
+            print(topartist, "inside topartist error")
+            continue
+        for x in range(0,len(event)):
+            events.append(event[x])
+
+    print(topgenres[0])
+
+    # #TODO discuss with team: should any top genre be added at all for spotfy recommendations? just one?.. or only in case no artists come up.. 
+    #was discussed decided to leave top genre out of it unless topartists returns empty
+    # event = ticket_master_request(user=user, page=page, id=id, genre=topgenres[0], city=city, start_date=start_date, end_date=end_date, search=search)
+    # if event == "error":
+    #     print("inside topgenre error")
+    # else:           
+    #     for x in range(0,len(event)):
+    #         events.append(event[x])
+
+    #only use top genres if no concerts returned from topartists
+    if not events: #if events is empty
+        for topgenre in topgenres:
+            print(topgenre)
+            event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, start_date=start_date, end_date=end_date, search=search)
+            if event == "error":
+                print("inside topgenre error")
+                continue
+            for x in range(0,len(event)):
+                events.append(event[x])
+    return events #TODO how to ensure events is a distinct list.. there could be case where topgenre returns a concerts already returned from topartists
 
 def login_home(request):
     return render(request, "landing/loginhome.html")
@@ -87,12 +130,6 @@ def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = 
         return "error"
     return events
 
-#def updateEvents(request, page, genre, city, page1, start_date, end_date, search):
-#    print("hello")
-#    events = ticket_master_request(genre, city, page1, start_date, end_date, search)
-#    return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
-
-
 def home(request, page): 
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
         has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
@@ -101,6 +138,8 @@ def home(request, page):
 
     filters = {}
     user = request.user 
+    # usertop = get_spotify_info(request)
+    # print(usertop)
     startdate = date.today().strftime("%Y-%m-%d")
     enddate = '2022-12-25'
     genre = ''
@@ -128,7 +167,7 @@ def home(request, page):
         checked = request.GET.get('checked')
         if checked is None:
             checked = []
-        print('starred', checked)
+        #print('starred', checked)
     elif request.method == "POST":
         startdate = request.POST.get('startdate')
         enddate = request.POST.get('enddate')
@@ -148,11 +187,17 @@ def home(request, page):
     filters["city"] = city
     filters["search"] = search
     filters["checked"] = checked
-    events = []  
+    events = ''  
     if "starred" in checked:
         events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        #print(events)
+    elif "recommended" in checked:
+        user_spotify_info = get_spotify_info(request)
+        events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        #print(events)
     else:
         events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        
     #print(events)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing', "filters": filters})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
@@ -164,7 +209,7 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
 
 #def ticket_master_request(genre, city, page, start_date, end_date, search):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
-    print("URL", url)
+    #print("URL", url)
     if(id != ''):
         url = url + '&id=' + id
     if(city != ''):
@@ -179,7 +224,7 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
         url = url + '&keyword=' + search 
         
 
-    print(url)
+    #print(url)
     response = requests.get(url) 
 
     concerts = response.json()
@@ -360,6 +405,37 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
 def about(request):
     return render(request, 'landing/about.html', {'title':'About'}) 
 
+#requests video id and thumbnail image to return to deatils page based on a keyword search
+def youtube_request(keyword=''):
+    #this request grabs top 5 results based on keyword in returns in order of most relevance. Has safeSearch set to moderate. 
+    url = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDefinition=high&key=AIzaSyBQojJu7hOV6QnJPVawxh4gVSYUsudGRyU&safeSearch=moderate&maxResults=5"
+    if keyword != '':
+        url = url + "&q=" + keyword + "music"   #form request using specified keyword
+    
+    response = requests.get(url) 
+    videos = response.json()['items']
+
+    #by default sends to details page blank ID and thumbnail if no video 
+    id = ''
+    thumbnail = ''
+    for video in videos:
+        try:
+            id = video['id']['videoId']
+            thumbnail = video['snippet']['thumbnails']['high']['url']
+        except:
+            continue #continues trying other videos in response if exception is thrown
+        else:
+            break #breaks if no exception is thrown
+    
+    #returns id and url for thumbnail to dictionary youtube_info
+    #id to be used to form href to redirect to video once thumbnail is clicked. iframe may be an option as well, will need to test more.. leaving to frontend
+    youtube_info = {}
+    youtube_info['id'] = id
+    youtube_info['thumbnail'] = thumbnail
+
+    return youtube_info
+
+
 def detail(request):
     event = {}
     event["name"] = request.GET.get("name")
@@ -393,9 +469,12 @@ def detail(request):
     event["youtube"] = request.GET.get("youtube")
     event["homepage"] = request.GET.get("homepage")
     event["starred"] = request.GET.get("starred")
+
+    print(event["name"])
+    youtube_info = youtube_request(event["name"])
     #event = urllib.parse.urlparse(data)
     #print("event:", event["starred"])
-    return render(request, "landing/detail.html", {"event": event})
+    return render(request, "landing/detail.html", {"event": event, "youtube_info":youtube_info})
 
 def add_star(request):
     #print("add")
