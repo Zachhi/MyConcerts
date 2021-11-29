@@ -1,5 +1,8 @@
 from django.urls import path
 from . import views
+from django.contrib import admin
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -13,4 +16,14 @@ urlpatterns = [
     path('add_star/', views.add_star, name = 'add_star'),
     path('remove_star/', views.remove_star, name = 'remove_star'),
     #path('get_starred_concerts', views.get_starred_concerts, name = 'get_starred_concerts'),
+    
+    
+    path(
+        'change-password/',
+        auth_views.PasswordChangeView.as_view(
+            template_name='landing/change-password.html',
+            success_url = '/'
+        ),
+        name='change_password'
+    ),
 ]
