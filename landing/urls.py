@@ -16,7 +16,8 @@ urlpatterns = [
     path('add_star/', views.add_star, name = 'add_star'),
     path('remove_star/', views.remove_star, name = 'remove_star'),
     #path('get_starred_concerts', views.get_starred_concerts, name = 'get_starred_concerts'),
-    
+    path('change-username/', views.change_username, name = 'change-username'),
+    path('change-notifications/', views.change_notifications, name = 'change-notif'),
     
     path(
         'change-password/',
@@ -26,4 +27,5 @@ urlpatterns = [
         ),
         name='change_password'
     ),
+    
 ]

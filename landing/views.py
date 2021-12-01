@@ -9,6 +9,8 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
 from users.models import Spotify_Notification_Cred, Starred_Concerts
+from django.contrib.auth.models import User
+from django import forms
 from datetime import date
 import datetime
 import urllib
@@ -130,11 +132,34 @@ def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = 
         return "error"
     return events
 
+def change_username(request, newusername):
+    if User.objects.filter(username=newusername).exists():
+        raise forms.ValidationError(u'Username "%s" is not available.' % newusername)
+    user = User.objects.get(username = request.user)
+    user.username = newusername
+    user.save()
+    #TODO render back to Profile - username change success page?.. or pass success message? 
+    return render(request, 'users/profile.html')
+
+def change_notifications(request):
+    #will always be logged in to be able to see profile page
+    spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+    notification_pref = str(spotify_notif_obj).split(',')[1]
+    if (notification_pref == 'True'):
+        spotify_notif_obj.notifications = 0
+    else:
+        spotify_notif_obj.notifications = 1
+    spotify_notif_obj.save()
+    
+    return render (request, 'users/profile.html')
+
+
+
 def home(request, page): 
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
         has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
         if 'yes' in str(has_spotify):
-            userlisttop = get_spotify_info(request)
+            userlisttop = get_spotify_info(request) 
 
     filters = {}
     user = request.user 
