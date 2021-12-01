@@ -2,6 +2,32 @@
 {% load custom_tags %}
 {% block content %}
 {% if events != "error" %}
+<div class="col-md-3">
+    <div class="content-section">
+        <h3>Filters</h3>
+        <!-- <p class='text-muted'>Leave filters you do not wish to use blank</p> -->
+        <form action="{% url 'landing-home' page=0 %}" method="POST">
+            {% csrf_token %}
+            {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
+            {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
+            {% include "landing/hamburger.html" with title="End Date" id="enddate" type="date"  %}
+            {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
+            {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
+
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="check[]" value="starred" id="starred">
+                <label class="form-check-label labelHelp" for="starred">Starred Concerts</label><br>
+                <!-- <input class="form-check-input" type="checkbox" name="check[]" value="unstarred" id="unstarred">
+                <label class="form-check-label labelHelp" for="unstarred">Unstarred Concerts</label><br> -->
+                <input class="form-check-input" type="checkbox" name="check[]" value="recommended" id="recommended">
+                <label class="form-check-label labelHelp" for="recommended">Recommended from Spotify</label>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-outline-info">Submit</button>
+            <button type="reset" class="btn btn-outline-info">Reset</button>
+        </form>
+    </div>
+</div>
 <div class="col-md-9">
     <div>
         <div class="card-deck d-flex justify-content-center">
@@ -36,32 +62,6 @@
             {% endif %}
         </div>
 
-    </div>
-</div>
-<div class="col">
-    <div class="content-section">
-        <h3>Filters</h3>
-        <!-- <p class='text-muted'>Leave filters you do not wish to use blank</p> -->
-        <form action="{% url 'landing-home' page=0 %}" method="POST">
-            {% csrf_token %}
-            {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
-            {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
-            {% include "landing/hamburger.html" with title="End Date" id="enddate" type="date"  %}
-            {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
-            {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
-
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="check[]" value="starred" id="starred">
-                <label class="form-check-label labelHelp" for="starred">Starred Concerts</label><br>
-                <!-- <input class="form-check-input" type="checkbox" name="check[]" value="unstarred" id="unstarred">
-                <label class="form-check-label labelHelp" for="unstarred">Unstarred Concerts</label><br> -->
-                <input class="form-check-input" type="checkbox" name="check[]" value="recommended" id="recommended">
-                <label class="form-check-label labelHelp" for="recommended">Recommended from Spotify</label>
-            </div>
-            <br>
-            <button type="submit" class="btn btn-outline-info">Submit</button>
-            <button type="reset" class="btn btn-outline-info">Reset</button>
-        </form>
     </div>
 </div>
 {% else %}
