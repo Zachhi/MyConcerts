@@ -14,6 +14,7 @@ from django import forms
 from datetime import date
 import datetime
 import urllib
+from django.contrib import messages
 
 # Spotify API User Authentification - sp is an OAuth Object
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
@@ -133,12 +134,25 @@ def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = 
     return events
 
 def change_username(request, newusername):
-    if User.objects.filter(username=newusername).exists():
-        raise forms.ValidationError(u'Username "%s" is not available.' % newusername)
-    user = User.objects.get(username = request.user)
-    user.username = newusername
-    user.save()
+    #add a check for admin/anonymous user
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in)
+        #newusername = 'hellowalls'
+        if User.objects.filter(username=newusername).exists():
+            raise forms.ValidationError(u'Username "%s" is not available.' % newusername)
+        
+        user = User.objects.get(username = request.user)
+        user.username = newusername
+        user.save()
+
+        spotify_notfi_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+        spotify_notfi_obj.username = newusername
+        spotify_notfi_obj.save()
+        if Starred_Concerts.objects.filter(username = request.user).exists():
+            starconcert_obj = Starred_Concerts.objects.get(username = request.user)
+            starconcert_obj.username = newusername
+            starconcert_obj.save()
     #TODO render back to Profile - username change success page?.. or pass success message? 
+    messages.success(request, f'New Username created: {user.username}!')
     return render(request, 'users/profile.html')
 
 def change_notifications(request):
@@ -150,10 +164,8 @@ def change_notifications(request):
     else:
         spotify_notif_obj.notifications = 1
     spotify_notif_obj.save()
-    
+    messages.success(request, f'Notification Preferences Changed!')
     return render (request, 'users/profile.html')
-
-
 
 def home(request, page): 
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
