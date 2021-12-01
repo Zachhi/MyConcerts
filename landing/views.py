@@ -521,10 +521,14 @@ def add_star(request):
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'):
         s1 = Starred_Concerts(username = request.user, concert_id = event["id"]) # how to get the current concert? 
         s1.save()
-    subject = 'MyConcerts: You\'re starred concert!'
-    html_message = render_to_string('landing/detail.html', {'event': event})
-    plain_message = strip_tags(html_message)
-    send_mail(subject, plain_message, 'noreply@example.com', [request.user.email], html_message=html_message)
+    notification_prf = Spotify_Notification_Cred(username=request.user)
+    notification_prf = str(notification_prf).split(",")
+    if(notification_prf[1] == "1"):
+        print("notification_prf")
+        subject = 'MyConcerts: You\'re starred concert!'
+        html_message = render_to_string('landing/detail.html', {'event': event})
+        plain_message = strip_tags(html_message)
+        send_mail(subject, plain_message, 'noreply@example.com', [request.user.email], html_message=html_message)
     print("added to table")
     return render(request, "landing/detail.html", {"event": event}) #redirect(history.back())
 
