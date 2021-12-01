@@ -68,8 +68,13 @@ def get_spotify_info(request): #TODO Look into how to automatically get refresh 
     user_top["topartists"] = list(set(topartists_name + toptracks_artist)) 
     
 
+    topgenres_name = []
+
     for i in range(0, 5): #only take top 5 genres
-        topgenres_name.append(topartists['items'][i]['genres'])
+        try:
+            topgenres_name.append(topartists['items'][i]['genres'])
+        except: 
+            break
     topgenres_name_flat = [ item for elem in topgenres_name for item in elem] #flattens topgenres_name list
     user_top["topgenres"] = topgenres_name_flat
     
@@ -92,7 +97,7 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
         for x in range(0,len(event)):
             events.append(event[x])
 
-    print(topgenres[0])
+    #print(topgenres[0])
 
     # #TODO discuss with team: should any top genre be added at all for spotfy recommendations? just one?.. or only in case no artists come up.. 
     #was discussed decided to leave top genre out of it unless topartists returns empty
@@ -521,10 +526,14 @@ def add_star(request):
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'):
         s1 = Starred_Concerts(username = request.user, concert_id = event["id"]) # how to get the current concert? 
         s1.save()
-    subject = 'MyConcerts: Your starred concert!'
-    html_message = render_to_string('landing/detail.html', {'event': event})
-    plain_message = strip_tags(html_message)
-    send_mail(subject, plain_message, 'noreply@example.com', [request.user.email], html_message=html_message)
+    notification_prf = Spotify_Notification_Cred(username=request.user)
+    notification_prf = str(notification_prf).split(",")
+    if(notification_prf[1] == "1"):
+        print("notification_prf")
+        subject = 'MyConcerts: Your starred concert!'
+        html_message = render_to_string('landing/detail.html', {'event': event})
+        plain_message = strip_tags(html_message)
+        send_mail(subject, plain_message, 'noreply@example.com', [request.user.email], html_message=html_message)
     print("added to table")
     return render(request, "landing/detail.html", {"event": event}) #redirect(history.back())
 
