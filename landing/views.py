@@ -68,8 +68,13 @@ def get_spotify_info(request): #TODO Look into how to automatically get refresh 
     user_top["topartists"] = list(set(topartists_name + toptracks_artist)) 
     
 
+    topgenres_name = []
+
     for i in range(0, 5): #only take top 5 genres
-        topgenres_name.append(topartists['items'][i]['genres'])
+        try:
+            topgenres_name.append(topartists['items'][i]['genres'])
+        except: 
+            break
     topgenres_name_flat = [ item for elem in topgenres_name for item in elem] #flattens topgenres_name list
     user_top["topgenres"] = topgenres_name_flat
     
@@ -92,7 +97,7 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
         for x in range(0,len(event)):
             events.append(event[x])
 
-    print(topgenres[0])
+    #print(topgenres[0])
 
     # #TODO discuss with team: should any top genre be added at all for spotfy recommendations? just one?.. or only in case no artists come up.. 
     #was discussed decided to leave top genre out of it unless topartists returns empty
