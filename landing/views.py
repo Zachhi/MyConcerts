@@ -215,7 +215,6 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
 #     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 #     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-#def ticket_master_request(genre, city, page, start_date, end_date, search):
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     #print("URL", url)
     if(id != ''):
