@@ -76,7 +76,7 @@ def get_spotify_info(request): #TODO Look into how to automatically get refresh 
 
     return user_top
 
-def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
+def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', state = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
     print("in spotify concerts function")
     topartists = spotifyinfo['topartists'] #list of topartists
     topgenres = spotifyinfo['topgenres'] #list of topgenres 
@@ -85,7 +85,7 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
     for topartist in topartists:
         print(topartist)
         #TODO is there a way to search on a exact keyword match here.. search=sabaton returning concerts for Saba.. user hasnt listened to saba
-        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=topartist)
+        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, state=state, start_date=start_date, end_date=end_date, search=topartist)
         if event == "error":
             print(topartist, "inside topartist error")
             continue
@@ -107,7 +107,7 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
     if not events: #if events is empty
         for topgenre in topgenres:
             print(topgenre)
-            event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, start_date=start_date, end_date=end_date, search=search)
+            event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, state=state, start_date=start_date, end_date=end_date, search=search)
             if event == "error":
                 print("inside topgenre error")
                 continue
@@ -118,13 +118,13 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
 def login_home(request):
     return render(request, "landing/loginhome.html")
 
-def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music'):
+def get_starred_concerts(user='', genre = '', city = '', state = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music'):
     ids = list()
     for a_concert in Starred_Concerts.objects.filter(username=user):
         ids.append(str(a_concert))
     events  = list()
     for id in ids:
-        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=search)
+        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, state=state, start_date=start_date, end_date=end_date, search=search)
         if event == "error":
             print("inside starred error")
             continue
@@ -181,6 +181,7 @@ def home(request, page):
     enddate = '2022-12-25'
     genre = ''
     city = ''
+    state = ''
     search = 'Music'
     checked = []
     if request.method == 'GET':
@@ -196,6 +197,9 @@ def home(request, page):
         city = request.GET.get('city')
         if city is None:
             city = ''
+        state = request.GET.get('state')    #TODO will have to add state to HTML
+        if state is None:
+            state = ''
         search = request.GET.get('search')
         if search == '':
             search = 'Music'
@@ -210,6 +214,7 @@ def home(request, page):
         enddate = request.POST.get('enddate')
         genre = request.POST.get('genre')
         city = request.POST.get('city')
+        state = request.POST.get('state')
         search = request.POST.get('search')
         if search == '':
             search = 'Music'
@@ -222,29 +227,31 @@ def home(request, page):
     filters["enddate"] = enddate
     filters["genre"] = genre
     filters["city"] = city
+    filters["state"] = state
     filters["search"] = search
     filters["checked"] = checked
     events = ''  
     if "starred" in checked:
-        events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         #print(events)
     elif "recommended" in checked:
         user_spotify_info = get_spotify_info(request)
-        events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         #print(events)
     else:
-        events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         
     #print(events)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing', "filters": filters})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(user, genre = '', city = '', stateCode = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
+def ticket_master_request(user, genre = '', city = '', state = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
 #     events = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '2022-12-25', 'op')
 #     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 #     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
 #def ticket_master_request(genre, city, page, start_date, end_date, search):
+    
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     #print("URL", url)
     if(id != ''):
@@ -259,8 +266,8 @@ def ticket_master_request(user, genre = '', city = '', stateCode = '', page = 0,
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
     if(search != ''):
         url = url + '&keyword=' + search 
-    if (stateCode != ''):
-        url = url + '&stateCode=' + stateCode
+    if (state != ''):
+        url = url + '&stateCode=' + state
 
     url = url + '&sort=relevance,desc'
         
