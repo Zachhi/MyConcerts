@@ -7,21 +7,31 @@
 {% block content %}
 
 <div class="col-md-5">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
     <div class="concert-info-box mt-0">
         <!-- <form><input type="button" value="Back" onclick="history.back()"></form> -->
-        <button type="submit" class="btn btn-outline-info" onclick="history.back()">Return to Gallery</button>
+        <div class="d-flex justify-content-between">
+
+            <div type="submit" class="btn btn-outline-info" onclick="history.back()">Return to Gallery</div>
+            {% if event.starred == "true" %} 
+            <a id="star-btn" class="btn btn-outline-info text-danger"
+                href="{% url 'remove_star'%}?{{event|get_encoded_dict}}"><i class="fas fa-heart"></i></i></a>
+            {% else %}
+            <a id="star-btn" class="btn btn-outline-info text-muted"
+                href="{% url 'add_star'%}?{{event|get_encoded_dict}}"><i class="fas fa-heart"></i></a>
+            {% endif %}
+        </div>
         <br><br>
         <h1 class="concert-title" style="color:navy">{{ event.name }}</h1>
         <br>
         <p>{{ event.venue }}</p>
         <p>{{ event.city }}, {{ event.state }}</p>
-        {% if event.starred == "true" %}
-        <a id="star-btn" class="btn starred text-warning"
-            href="{% url 'remove_star'%}?{{event|get_encoded_dict}}"><i class="fas fa-star"></i></a>
-        {% else %}
-        <a id="star-btn" class="btn starred text-muted"
-            href="{% url 'add_star'%}?{{event|get_encoded_dict}}"><i class="fas fa-star"></i></a>
-        {% endif %}
     </div>
     <div class="concert-info-box">
         <p><b>Date:</b> {{ event.date }}</p>
