@@ -239,7 +239,7 @@ def home(request, page):
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing', "filters": filters})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
+def ticket_master_request(user, genre = '', city = '', stateCode = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
 #     events = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '2022-12-25', 'op')
 #     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 #     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
@@ -259,6 +259,8 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
     if(search != ''):
         url = url + '&keyword=' + search 
+    if (stateCode != ''):
+        url = url + '&stateCode=' + stateCode
 
     url = url + '&sort=relevance,desc'
         
