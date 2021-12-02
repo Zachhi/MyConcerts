@@ -359,6 +359,12 @@ img {
   background: #e52d27;
   border: 2px solid #e52d27;
 }
+
+.btn-outline-filter {
+  color: rgb(0,0,0) !important;
+  border: 2px solid black;
+}
+
 .btn-xs.btn-icon span, .btn-xs.btn-icon i {
     line-height: 34px;
 }

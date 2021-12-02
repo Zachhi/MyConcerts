@@ -39,6 +39,7 @@ ul {
 
 .bg-navbar {
   background-color: var(--b1);
+  border-bottom: 2px solid black;
 }
 
 .link-concert {
@@ -65,7 +66,7 @@ ul {
   margin-bottom: 20px;*/
   background: #ffffff;
   padding: 10px 20px;
-  border: 2px solid #4d4d4d;
+  border: 2px solid #3a3a3a;
   border-radius: 5px;
 }
 
@@ -150,6 +151,8 @@ a:hover {
 
 .cardMargin {
   margin-bottom: 30px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 /* Help align different sized text vertically in cards */
