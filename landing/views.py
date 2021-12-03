@@ -137,7 +137,8 @@ def settings_main(request):
     newusername = ''
     newemail = ''
     newpassword = ''
-    sliders = ['',''] #slider tracks [notifications on/off, spotify enabled/disabled]
+    sliders = ['']*2#slider tracks [notifications on/off, spotify enabled/disabled]\
+ 
 
     if request.method == 'GET':
         newusername = request.GET.get('changeUser')
@@ -152,14 +153,14 @@ def settings_main(request):
     
     if newusername != '':
         return change_username(request)
-    if sliders[0] != '':
+    if len(sliders) > 0:
         return change_notifications(request)
-    #if sliders[1] != '':
+    #if len(sliders) > 1:
     #    return change_spotify(request)
     #if newpassword != '':
     #    return change_password(request)
-    #if newemail != '':
-    #    return change_email(request)
+    if newemail != '':
+        return change_email(request)
     
 
 
@@ -189,6 +190,30 @@ def change_username(request):
             starconcert_obj.save()
     #TODO render back to Profile - username change success page?.. or pass success message? 
     messages.success(request, f'New Username created: {user.username}!')
+    return render(request, 'users/profile.html')
+
+def change_email(request):
+    #add a check for admin/anonymous user
+
+    if request.method == 'GET':
+        newemail = request.GET.get('changeEmail')
+    elif request.method == "POST":
+        newemail = request.POST.get('changeEmail')
+
+        
+        user = User.objects.get(username = request.user)
+        user.email = newemail
+        user.save()
+
+        spotify_notfi_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+        spotify_notfi_obj.email = newemail
+        spotify_notfi_obj.save()
+        if Starred_Concerts.objects.filter(username = request.user).exists():
+            starconcert_obj = Starred_Concerts.objects.get(username = request.user)
+            starconcert_obj.email = newemail
+            starconcert_obj.save()
+    #TODO render back to Profile - username change success page?.. or pass success message? 
+    messages.success(request, f'New Email Created: {user.email}!')
     return render(request, 'users/profile.html')
 
 def change_notifications(request):
