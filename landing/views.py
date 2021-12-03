@@ -133,8 +133,37 @@ def get_starred_concerts(user='', genre = '', city = '', state = '', page = 0, s
         return "error"
     return events
 
-def change_username(request, newusername):
+def settings_main(request):
+    newusername = ''
+    newemail = ''
+    newpassword = ''
+    sliders = ['',''] #slider tracks [notifications on/off, spotify enabled/disabled]
+
+    if request.method == 'GET':
+        newusername = request.GET.get('changeUser')
+        newemail = request.GET.get('changeEmail')
+        newpassword = request.GET.get('changePass')
+        sliders = request.GET.getlist("slider[]")
+    elif request.method == "POST":
+        newusername = request.POST.get('changeUser')
+        newemail = request.POST.get('changeEmail')
+        newpassword = request.POST.get('changePass')
+        sliders = request.POST.getlist("slider[]")
+    
+    if newusername != '':
+        return change_username(request)
+    if sliders[0] != '':
+        return change_notifications(request)
+
+
+def change_username(request):
     #add a check for admin/anonymous user
+
+    if request.method == 'GET':
+        newusername = request.GET.get('changeUser')
+    elif request.method == "POST":
+        newusername = request.POST.get('changeUser')
+
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in)
         #newusername = 'hellowalls'
         if User.objects.filter(username=newusername).exists():

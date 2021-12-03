@@ -18,6 +18,7 @@ urlpatterns = [
     #path('get_starred_concerts', views.get_starred_concerts, name = 'get_starred_concerts'),
     path('change-username/', views.change_username, name = 'change-username'),
     path('change-notifications/', views.change_notifications, name = 'change-notif'),
+    path('settings-main/', views.settings_main, name = 'settings-main'),
     
     path(
         'change-password/',
