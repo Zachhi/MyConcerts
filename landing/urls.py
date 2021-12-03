@@ -1,6 +1,10 @@
 from django.urls import path
 from . import views
-
+from django.contrib import admin
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from django.conf.urls import url
+import users.views
 
 urlpatterns = [
     path('spotify-auth', views.spotify_auth, name='spotify-auth'),
@@ -13,4 +17,10 @@ urlpatterns = [
     path('add_star/', views.add_star, name = 'add_star'),
     path('remove_star/', views.remove_star, name = 'remove_star'),
     #path('get_starred_concerts', views.get_starred_concerts, name = 'get_starred_concerts'),
+    path('change-username/', views.change_username, name = 'change-username'),
+    path('change-notifications/', views.change_notifications, name = 'change-notif'),
+    path('settings-main/', views.settings_main, name = 'settings-main'),
+    path('change-spotify/', views.change_spotify, name='change-spotify'),
+    # path('settings-main/', views.settings_main, name = 'settings-main'), 
+    path('users/profile/', users.views.profile, name = 'profile'),   
 ]

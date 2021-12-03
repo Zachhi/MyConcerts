@@ -9,12 +9,20 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from . import credentials
 from users.models import Spotify_Notification_Cred, Starred_Concerts
+from django.contrib.auth.models import User
+from django import forms
 from datetime import date
 import datetime
 import urllib
+<<<<<<< HEAD
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+=======
+from django.contrib import messages
+
+
+>>>>>>> settings_page
 
 # Spotify API User Authentification - sp is an OAuth Object
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
@@ -81,7 +89,7 @@ def get_spotify_info(request): #TODO Look into how to automatically get refresh 
 
     return user_top
 
-def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
+def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', state = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
     print("in spotify concerts function")
     topartists = spotifyinfo['topartists'] #list of topartists
     topgenres = spotifyinfo['topgenres'] #list of topgenres 
@@ -90,7 +98,7 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
     for topartist in topartists:
         print(topartist)
         #TODO is there a way to search on a exact keyword match here.. search=sabaton returning concerts for Saba.. user hasnt listened to saba
-        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=topartist)
+        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, state=state, start_date=start_date, end_date=end_date, search=topartist)
         if event == "error":
             print(topartist, "inside topartist error")
             continue
@@ -112,7 +120,7 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
     if not events: #if events is empty
         for topgenre in topgenres:
             print(topgenre)
-            event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, start_date=start_date, end_date=end_date, search=search)
+            event = ticket_master_request(user=user, page=page, id=id, genre=topgenre, city=city, state=state, start_date=start_date, end_date=end_date, search=search)
             if event == "error":
                 print("inside topgenre error")
                 continue
@@ -123,13 +131,13 @@ def get_spotify_concerts(spotifyinfo, user='', genre = '', city = '', page = 0, 
 def login_home(request):
     return render(request, "landing/loginhome.html")
 
-def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music'):
+def get_starred_concerts(user='', genre = '', city = '', state = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music'):
     ids = list()
     for a_concert in Starred_Concerts.objects.filter(username=user):
         ids.append(str(a_concert))
     events  = list()
     for id in ids:
-        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, start_date=start_date, end_date=end_date, search=search)
+        event = ticket_master_request(user=user, page=page, id=id, genre=genre, city=city, state=state, start_date=start_date, end_date=end_date, search=search)
         if event == "error":
             print("inside starred error")
             continue
@@ -138,11 +146,142 @@ def get_starred_concerts(user='', genre = '', city = '', page = 0, start_date = 
         return "error"
     return events
 
+def settings_main(request):
+    newusername = ''
+    newemail = ''
+    newpassword = ''
+    sliders = ['']*2#slider tracks [notifications on/off, spotify enabled/disabled]\
+    
+    if request.method == 'GET':
+        newusername = request.GET.get('changeUser')
+        newemail = request.GET.get('changeEmail')
+        newpassword = request.GET.get('changePass')
+        sliders = request.GET.getlist("slider[]")
+    elif request.method == "POST":
+        newusername = request.POST.get('changeUser')
+        newemail = request.POST.get('changeEmail')
+        newpassword = request.POST.get('changePass')
+        sliders = request.POST.getlist("slider[]")
+    
+    if newusername != '':
+        return change_username(request)
+    if len(sliders) > 0:
+        return change_notifications(request)
+    #if len(sliders) > 1:
+    #    return change_spotify(request)
+    if newpassword != '':
+        return change_password(request)
+    if newemail != '':
+        return change_email(request)
+    return redirect('profile')
+
+def change_password(request):
+    if request.method == 'GET':
+        newpassword = request.GET.get('changePass')
+    elif request.method == "POST":
+        newpassword = request.POST.get('changePass')
+
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in)    
+        user = User.objects.get(username = request.user)
+        user.set_password(newpassword)
+        user.save()
+    messages.success(request, f'New Password created! Please login again.')
+    return redirect('profile')
+
+
+def change_username(request):
+    #add a check for admin/anonymous user
+
+    if request.method == 'GET':
+        newusername = request.GET.get('changeUser')
+    elif request.method == "POST":
+        newusername = request.POST.get('changeUser')
+
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in)
+        #newusername = 'hellowalls'
+        if User.objects.filter(username=newusername).exists():
+            raise forms.ValidationError(u'Username "%s" is not available.' % newusername)
+        
+        user = User.objects.get(username = request.user)
+        user.username = newusername
+        user.save()
+
+        spotify_notfi_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+        spotify_notfi_obj.username = newusername
+        spotify_notfi_obj.save()
+        if Starred_Concerts.objects.filter(username = request.user).exists():
+            starconcert_obj = Starred_Concerts.objects.get(username = request.user)
+            starconcert_obj.username = newusername
+            starconcert_obj.save()
+    #TODO render back to Profile - username change success page?.. or pass success message? 
+    messages.success(request, f'New Username created: {user.username}!')
+    #return render(request, 'users/profile.html')
+    return redirect('profile')
+
+def change_email(request):
+    #add a check for admin/anonymous user
+
+    if request.method == 'GET':
+        newemail = request.GET.get('changeEmail')
+    elif request.method == "POST":
+        newemail = request.POST.get('changeEmail')
+
+        
+        user = User.objects.get(username = request.user)
+        user.email = newemail
+        user.save()
+
+        spotify_notfi_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+        spotify_notfi_obj.email = newemail
+        spotify_notfi_obj.save()
+        if Starred_Concerts.objects.filter(username = request.user).exists():
+            starconcert_obj = Starred_Concerts.objects.get(username = request.user)
+            starconcert_obj.email = newemail
+            starconcert_obj.save()
+    #TODO render back to Profile - username change success page?.. or pass success message? 
+    messages.success(request, f'New Email Created: {user.email}!')
+    return redirect('profile')
+
+def change_notifications(request):
+    #will always be logged in to be able to see profile page
+    spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+    notification_pref = str(spotify_notif_obj).split(',')[1]
+
+    if (notification_pref == "True"):
+        spotify_notif_obj.notifications = 0
+    else:
+        spotify_notif_obj.notifications = 1
+    spotify_notif_obj.save()
+    messages.success(request, f'Notification Preferences Changed!')
+
+    
+    return redirect('profile')
+
+def change_spotify(request):
+    spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+    has_spotify = str(spotify_notif_obj).split(',')[0]
+    if has_spotify == 'no':
+        spotify_notif_obj.has_spotify = 'yes'
+        spotify_notif_obj.save()
+        auth_url = sp.get_authorize_url()
+
+        return redirect(auth_url)
+    else:
+        spotify_notif_obj.has_spotify = 'no'
+        spotify_notif_obj.save()
+
+        messages.success(request, f'Spotify accessibility changed.')
+        #TODO send indicator look at users/vies.py
+        return redirect('profile')
+
+
+    
+
 def home(request, page): 
-    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
-        has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
-        if 'yes' in str(has_spotify):
-            userlisttop = get_spotify_info(request)
+    # if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
+    #     has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
+    #     if 'yes' in str(has_spotify):
+    #         userlisttop = get_spotify_info(request) 
 
     filters = {}
     user = request.user 
@@ -152,6 +291,7 @@ def home(request, page):
     enddate = '2022-12-25'
     genre = ''
     city = ''
+    state = ''
     search = 'Music'
     checked = []
     if request.method == 'GET':
@@ -167,6 +307,9 @@ def home(request, page):
         city = request.GET.get('city')
         if city is None:
             city = ''
+        state = request.GET.get('state')    #TODO will have to add state to HTML
+        if state is None:
+            state = ''
         search = request.GET.get('search')
         if search == '':
             search = 'Music'
@@ -181,6 +324,7 @@ def home(request, page):
         enddate = request.POST.get('enddate')
         genre = request.POST.get('genre')
         city = request.POST.get('city')
+        state = request.POST.get('state')
         search = request.POST.get('search')
         if search == '':
             search = 'Music'
@@ -193,28 +337,37 @@ def home(request, page):
     filters["enddate"] = enddate
     filters["genre"] = genre
     filters["city"] = city
+    filters["state"] = state
     filters["search"] = search
     filters["checked"] = checked
     events = ''  
     if "starred" in checked:
-        events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         #print(events)
     elif "recommended" in checked:
-        user_spotify_info = get_spotify_info(request)
-        events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
+            has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
+            if 'yes' in str(has_spotify):
+                user_spotify_info = get_spotify_info(request)
+                events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         #print(events)
     else:
-        events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, search=search)
+        events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         
     #print(events)
     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing', "filters": filters})
     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-def ticket_master_request(user, genre = '', city = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
+def ticket_master_request(user, genre = '', city = '', state = '', page = 0, start_date = date.today().strftime("%Y-%m-%d"), end_date = '2022-12-25', search = 'Music', id=''):
 #     events = ticket_master_request('', '', 1, date.today().strftime("%Y-%m-%d"), '2022-12-25', 'op')
 #     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 #     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
+<<<<<<< HEAD
+=======
+#def ticket_master_request(genre, city, page, start_date, end_date, search):
+    
+>>>>>>> settings_page
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     #print("URL", url)
     if(id != ''):
@@ -229,6 +382,10 @@ def ticket_master_request(user, genre = '', city = '', page = 0, start_date = da
         url = url + '&endDateTime=' + end_date + 'T00:00:00Z'
     if(search != ''):
         url = url + '&keyword=' + search 
+    if (state != ''):
+        url = url + '&stateCode=' + state
+
+    url = url + '&sort=relevance,desc'
         
 
     #print(url)

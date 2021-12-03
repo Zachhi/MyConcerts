@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm
+
 #from landing.views import spotify_auth
 from users.models import Spotify_Notification_Cred
 
@@ -27,5 +28,7 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    notification_prf = Spotify_Notification_Cred.objects.get(username=request.user)
+    notification_prf = notification_prf.notifications
+    return render(request, 'users/profile.html', {"notifications":str(notification_prf)})
 

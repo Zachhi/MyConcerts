@@ -1,7 +1,10 @@
 {% extends "landing/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-    {% if messages %}
+    
+<html>
+<body>
+{% if messages %}
     {% for message in messages %}
     <div class="alert alert-{{ message.tags }}">
         {{ message }}
@@ -9,4 +12,71 @@
     {% endfor %}
     {% endif %}
     <h1>{{ user.username }}</h1>
+<div class = "container">
+
+    <div class = "row text-center">
+        <div class = "col text-center">
+            <p><h1> Your Profile </h1> </p>
+            <p><h4 style="margin-bottom: 5%; color: rgb(187, 187, 187);"> {{user.first_name}} {{user.last_name}} </h4> </p>
+        </div>
+    </div>
+
+    <div class = "row text-center">
+        <div class = "col-md-4" >
+            <div style="margin-bottom: 10%; font-size: 1.2em; color: rgb(255, 255, 255); display: inline-block; text-align: left;">
+                <p style="margin-bottom: 2em;">Username: </p>
+                <p style="margin-bottom: 2em;">Email: </p>
+                <p style="margin-bottom: 2em;">Password: </p>
+                <p style="margin-bottom: 2em;">Notifications: </p>
+                <p style="margin-bottom: 2em;">Spotify: </p>
+            </div>
+        </div>
+
+        <div class = "col-md-4">
+            <div style="margin-bottom: 10%; font-size: 1.2em; color: rgb(151, 151, 151);display: inline-block; text-align: left;">
+                <p style="margin-bottom: 2em;">{{ user.username }}</p>
+                <p style="margin-bottom: 2em;">{{ user.email }}</p>
+                <p style="margin-bottom: 2em;">**********</p>
+                <p style="margin-bottom: 2em;">{{notifications}}</p>
+                <p style="margin-bottom: 2em;">Off</p>                
+            </div>
+        </div>
+
+        <div class = "col-md-4" style="text-align: left;">
+            <form action="{% url 'settings-main'%}" method="POST">
+                {% csrf_token %}
+                {% include "landing/hamburger.html" with title="Change Username" id="changeUser" type="text"  %}
+                {% include "landing/hamburger.html" with title="Change Email" id="changeEmail" type="text"  %}
+                {% include "landing/hamburger.html" with title="Change Password" id="changePass" type="text"  %}
+
+
+                {% if notifications == "True" %}
+                they want notifications
+                {% else %}
+                they dont want notifications
+                {% endif %}
+
+                <label class="switch" activation_status = 1 style="margin-top: 1em;">
+                    <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs">
+                    <span class="slider round"></span>
+                </label>
+                <br><br>
+
+                <label class="switch">
+                    <input type="checkbox" name = "slider[]" value = "spotify" id = "spotify">
+                    <span class="slider round"></span>
+                </label>
+                <br><br>
+
+                <button type="submit" class="btn btn-outline-info">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+    </div>
+</div>
+
+</body>
+</html>
 {% endblock content %}
