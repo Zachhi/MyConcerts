@@ -154,6 +154,13 @@ def settings_main(request):
         return change_username(request)
     if sliders[0] != '':
         return change_notifications(request)
+    #if sliders[1] != '':
+    #    return change_spotify(request)
+    #if newpassword != '':
+    #    return change_password(request)
+    #if newemail != '':
+    #    return change_email(request)
+    
 
 
 def change_username(request):
