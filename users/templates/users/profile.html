@@ -41,7 +41,14 @@
                 {% include "landing/hamburger.html" with title="Change Email" id="changeEmail" type="text"  %}
                 {% include "landing/hamburger.html" with title="Change Password" id="changePass" type="text"  %}
 
-                <label class="switch" style="margin-top: 1em;">
+
+                {% if notifications == "True" %}
+                they want notifications
+                {% else %}
+                they dont want notifications
+                {% endif %}
+
+                <label class="switch" activation_status = 1 style="margin-top: 1em;">
                     <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs">
                     <span class="slider round"></span>
                 </label>

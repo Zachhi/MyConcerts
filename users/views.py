@@ -28,5 +28,7 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    notification_prf = Spotify_Notification_Cred.objects.get(username=request.user)
+    notification_prf = notification_prf.notifications
+    return render(request, 'users/profile.html', {"notifications":str(notification_prf)})
 

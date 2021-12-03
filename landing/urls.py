@@ -3,7 +3,8 @@ from . import views
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-
+from django.conf.urls import url
+import users.views
 
 urlpatterns = [
     path('spotify-auth', views.spotify_auth, name='spotify-auth'),
@@ -19,14 +20,6 @@ urlpatterns = [
     path('change-username/', views.change_username, name = 'change-username'),
     path('change-notifications/', views.change_notifications, name = 'change-notif'),
     path('settings-main/', views.settings_main, name = 'settings-main'),
-    
-    path(
-        'change-password/',
-        auth_views.PasswordChangeView.as_view(
-            template_name='landing/change-password.html',
-            success_url = '/'
-        ),
-        name='change_password'
-    ),
-    
+    path('settings-main/', views.settings_main, name = 'settings-main'), 
+    path('users/profile/', users.views.profile, name = 'profile'),   
 ]

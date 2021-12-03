@@ -16,6 +16,8 @@ import datetime
 import urllib
 from django.contrib import messages
 
+
+
 # Spotify API User Authentification - sp is an OAuth Object
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
 
@@ -138,8 +140,7 @@ def settings_main(request):
     newemail = ''
     newpassword = ''
     sliders = ['']*2#slider tracks [notifications on/off, spotify enabled/disabled]\
- 
-
+    
     if request.method == 'GET':
         newusername = request.GET.get('changeUser')
         newemail = request.GET.get('changeEmail')
@@ -157,11 +158,24 @@ def settings_main(request):
         return change_notifications(request)
     #if len(sliders) > 1:
     #    return change_spotify(request)
-    #if newpassword != '':
-    #    return change_password(request)
+    if newpassword != '':
+        return change_password(request)
     if newemail != '':
         return change_email(request)
-    
+    return redirect('profile')
+
+def change_password(request):
+    if request.method == 'GET':
+        newpassword = request.GET.get('changePass')
+    elif request.method == "POST":
+        newpassword = request.POST.get('changePass')
+
+    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in)    
+        user = User.objects.get(username = request.user)
+        user.set_password(newpassword)
+        user.save()
+    messages.success(request, f'New Password created! Please login again.')
+    return redirect('profile')
 
 
 def change_username(request):
@@ -190,7 +204,8 @@ def change_username(request):
             starconcert_obj.save()
     #TODO render back to Profile - username change success page?.. or pass success message? 
     messages.success(request, f'New Username created: {user.username}!')
-    return render(request, 'users/profile.html')
+    #return render(request, 'users/profile.html')
+    return redirect('profile')
 
 def change_email(request):
     #add a check for admin/anonymous user
@@ -214,19 +229,22 @@ def change_email(request):
             starconcert_obj.save()
     #TODO render back to Profile - username change success page?.. or pass success message? 
     messages.success(request, f'New Email Created: {user.email}!')
-    return render(request, 'users/profile.html')
+    return redirect('profile')
 
 def change_notifications(request):
     #will always be logged in to be able to see profile page
     spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
     notification_pref = str(spotify_notif_obj).split(',')[1]
-    if (notification_pref == 'True'):
+
+    if (notification_pref == "True"):
         spotify_notif_obj.notifications = 0
     else:
         spotify_notif_obj.notifications = 1
     spotify_notif_obj.save()
     messages.success(request, f'Notification Preferences Changed!')
-    return render (request, 'users/profile.html')
+
+    
+    return redirect('profile')
 
 def home(request, page): 
     if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
