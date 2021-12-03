@@ -1,13 +1,52 @@
 {% extends "landing/base.html" %}
 {% load custom_tags %}
+
+{% block extrahead %}
+<script>
+    function loadHamburgers() {
+        var toggler = document.getElementById("hamburger-toggler");
+        if(!window.sessionStorage) toggler.classList.add("invisible");;
+        var hamburgers = document.getElementsByClassName("collapse");
+        var state = window.sessionStorage.getItem("hamburgerness");
+        // console.log(state);
+        state = ((state == "true") ? "true" : "false");
+        for (let index = 1; index < hamburgers.length; index++) {
+            hamburgers.item(index).classList.toggle("show", state == "true");
+        }
+        toggler.classList.toggle("bi-caret-right-fill", state == "false");
+        toggler.classList.toggle("bi-caret-down-fill", state == "true");
+    }
+
+    function toggleHamburgers() {
+        if(!window.sessionStorage) return;
+        var state = window.sessionStorage.getItem("hamburgerness");
+        state = ((state != "true") ? "true" : "false");
+        // console.log(state);
+        window.sessionStorage.setItem("hamburgerness", state);
+        loadHamburgers();
+    }
+</script>
+{% endblock %}
+
+{% block body_args %}
+onload="loadHamburgers();"
+{% endblock %}
+
+
 {% block content %}
-{% if events != "error" %}
-<div class="col-md-2">
-    <div class="content-section" style="position: fixed; margin-left: -15px;">
-        <h3>Filters</h3>
+<div class="col-md-3">
+    <div class="content-section position-fixed">
+        <div class="d-flex mb-4">
+            <h3 class="m-0">Filters</h3>
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="btn btn-small text-dark p-0" type="button" onclick="toggleHamburgers()">
+                    <i id="hamburger-toggler" class="bi bi-caret-right-fill"></i>
+                </div>
+            </div>
+        </div>
         <!-- <p class='text-muted'>Leave filters you do not wish to use blank</p> -->
-        <form action="{% url 'landing-home' page=0 %}" method="POST">
-            <div style="margin-left: -0.25em;">
+        <form name="form_data" action="{% url 'landing-home' page=0 %}" method="POST">
+            <div>
             {% csrf_token %}
             {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
             {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
@@ -24,11 +63,12 @@
                 <label class="form-check-label labelHelp" for="recommended">Recommended from Spotify</label>
             </div>
             <br>
-            <button type="submit" class="btn btn-outline-info">Submit</button>
+            <button type="submit" class="btn btn-info">Submit</button>
             <button type="reset" class="btn btn-outline-info">Reset</button>
         </form>
     </div>
 </div>
+{% if events != "error" %}
 <div class="col-md-9">
     {% if messages %}
     {% for message in messages %}

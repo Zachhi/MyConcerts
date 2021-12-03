@@ -203,3 +203,7 @@ a:hover {
   color: rgb(189, 189, 189);
 }
 
+.rotate {
+  transform: rotate(90deg);
+}
+
