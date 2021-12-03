@@ -20,6 +20,7 @@ urlpatterns = [
     path('change-username/', views.change_username, name = 'change-username'),
     path('change-notifications/', views.change_notifications, name = 'change-notif'),
     path('settings-main/', views.settings_main, name = 'settings-main'),
-    path('settings-main/', views.settings_main, name = 'settings-main'), 
+    path('change-spotify/', views.change_spotify, name='change-spotify'),
+    # path('settings-main/', views.settings_main, name = 'settings-main'), 
     path('users/profile/', users.views.profile, name = 'profile'),   
 ]

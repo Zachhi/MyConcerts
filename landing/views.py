@@ -246,11 +246,31 @@ def change_notifications(request):
     
     return redirect('profile')
 
+def change_spotify(request):
+    spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+    has_spotify = str(spotify_notif_obj).split(',')[0]
+    if has_spotify == 'no':
+        spotify_notif_obj.has_spotify = 'yes'
+        spotify_notif_obj.save()
+        auth_url = sp.get_authorize_url()
+
+        return redirect(auth_url)
+    else:
+        spotify_notif_obj.has_spotify = 'no'
+        spotify_notif_obj.save()
+
+        messages.success(request, f'Spotify accessibility changed.')
+        #TODO send indicator look at users/vies.py
+        return redirect('profile')
+
+
+    
+
 def home(request, page): 
-    if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
-        has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
-        if 'yes' in str(has_spotify):
-            userlisttop = get_spotify_info(request) 
+    # if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
+    #     has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
+    #     if 'yes' in str(has_spotify):
+    #         userlisttop = get_spotify_info(request) 
 
     filters = {}
     user = request.user 
@@ -314,8 +334,11 @@ def home(request, page):
         events = get_starred_concerts(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         #print(events)
     elif "recommended" in checked:
-        user_spotify_info = get_spotify_info(request)
-        events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
+        if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
+            has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
+            if 'yes' in str(has_spotify):
+                user_spotify_info = get_spotify_info(request)
+                events = get_spotify_concerts(user_spotify_info, user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
         #print(events)
     else:
         events = ticket_master_request(user=user, page=page, start_date=startdate, end_date=enddate, genre = genre, city = city, state = state, search=search)
