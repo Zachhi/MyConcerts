@@ -14,15 +14,12 @@ from django import forms
 from datetime import date
 import datetime
 import urllib
-<<<<<<< HEAD
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-=======
 from django.contrib import messages
 
 
->>>>>>> settings_page
 
 # Spotify API User Authentification - sp is an OAuth Object
 sp = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri = 'http://127.0.0.1:8000/callback', scope=SCOPE)
@@ -363,11 +360,6 @@ def ticket_master_request(user, genre = '', city = '', state = '', page = 0, sta
 #     return render(request, "landing/home.html", {"events": events, "page": page, 'title':'Landing'})
 #     # events has elements name, url, image, date, time, venue, city, state, min_price, max_price
 
-<<<<<<< HEAD
-=======
-#def ticket_master_request(genre, city, page, start_date, end_date, search):
-    
->>>>>>> settings_page
     url = 'https://app.ticketmaster.com/discovery/v2/events.json?&countryCode=US&apikey=HCme8Zo9DSUpVKCGGF9CbgcTKO3YbsjE&size=15&page=' + str(page)
     #print("URL", url)
     if(id != ''):
