@@ -141,8 +141,8 @@ a.article-title:hover {
 
 .cardMargin {
   margin-bottom: 30px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
   transition: all 0.3s !important;
 }
 .cardMargin:hover {
@@ -269,3 +269,10 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+.profileText {
+  margin-bottom: 10%; 
+  font-size: 1.4em; 
+  color: rgb(97, 40, 40); 
+  display: inline-block; 
+  text-align: left;
+}

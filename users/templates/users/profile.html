@@ -17,22 +17,22 @@
 
     <div class = "row text-center">
         <div class = "col-md-4" >
-            <div style="margin-bottom: 10%; font-size: 1.2em; color: rgb(255, 255, 255); display: inline-block; text-align: left;">
-                <p style="margin-bottom: 2em;">Username: </p>
-                <p style="margin-bottom: 2em;">Email: </p>
-                <p style="margin-bottom: 2em;">Password: </p>
-                <p style="margin-bottom: 2em;">Notifications: </p>
-                <p style="margin-bottom: 2em;">Spotify: </p>
+            <div style="margin-bottom: 10%; display: inline-block; text-align: left;">
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Username: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Email: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Password: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Notifications: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Spotify: </p>
             </div>
         </div>
 
         <div class = "col-md-4">
-            <div style="margin-bottom: 10%; font-size: 1.2em; color: rgb(151, 151, 151);display: inline-block; text-align: left;">
-                <p style="margin-bottom: 2em;">{{ user.username }}</p>
-                <p style="margin-bottom: 2em;">{{ user.email }}</p>
-                <p style="margin-bottom: 2em;">**********</p>
-                <p style="margin-bottom: 2em;">{{notifications}}</p>
-                <p style="margin-bottom: 2em;">{{spotify}}</p>                
+            <div style="margin-bottom: 10%; display: inline-block; text-align: left;">
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{ user.username }}</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{ user.email }}</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">**********</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{notifications}}</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{spotify}}</p>                
             </div>
         </div>
 
@@ -45,15 +45,16 @@
 
 
                 {% if notifications == "True" %}
-                they want notifications
+                <label class="switch" activation_status = 1 style="margin-top: 1.4em;" >
+                    <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs" checked data-toggle="toggle" >
+                    <span class="slider round"></span>
+                </label>
                 {% else %}
-                they dont want notifications
-                {% endif %}
-
-                <label class="switch" activation_status = 1 style="margin-top: 1em;">
+                <label class="switch" activation_status = 1 style="margin-top: 1.4em;">
                     <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs">
                     <span class="slider round"></span>
                 </label>
+                {% endif %}
                 <br><br>
 
                 <label class="switch">
