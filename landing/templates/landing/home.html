@@ -84,7 +84,7 @@ onload="loadHamburgers();"
             {% for x in events %}
             <a href="{% url 'landing-detail' %}?{{x|get_encoded_dict}}" class="cardHelp cardMargin">
                 <div class="card h-100 cardHelp cardBorder" style="width: 15.5em; height: 15em;">
-                    <img class="card-img-top imgBorder" src="{{ x.image }}" alt="Card image cap">
+                    <img alt="{{ x.name }} display picture" class="card-img-top imgBorder" src="{{ x.image }}" alt="Card image cap">
                     <div class="card-body">
                         <h5 class="card-title cardHelp" style="font-size: 1em;">{{ x.name }}</h5>
                         <div class = "d-flex justify-content-between ">

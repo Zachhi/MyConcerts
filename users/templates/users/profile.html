@@ -4,18 +4,19 @@
     
 <html>
 <body>
-{% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    <h1>{{ user.username }}</h1>
+
+<!-- <h1>{{ user.username }}</h1> -->
 <div class = "container">
 
     <div class = "row text-center">
         <div class = "col text-center">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
             <p><h1> Your Profile </h1> </p>
             <p><h4 style="margin-bottom: 5%; color: rgb(187, 187, 187);"> {{user.first_name}} {{user.last_name}} </h4> </p>
         </div>
