@@ -124,13 +124,6 @@ a.article-title:hover {
   font-size: 2rem;
 }
 
-a {
-  transition: all 0.3s !important;
-}
-a:hover {
-  transform: scale(1.15);
-}
-
 .cardHelp {
   text-decoration: none;
   color: #1d1d1d;
@@ -153,6 +146,10 @@ a:hover {
   margin-bottom: 30px;
   margin-left: 10px;
   margin-right: 10px;
+  transition: all 0.3s !important;
+}
+.cardMargin:hover {
+  transform: scale(1.15);
 }
 
 /* Help align different sized text vertically in cards */

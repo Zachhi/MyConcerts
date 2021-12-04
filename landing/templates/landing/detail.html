@@ -39,9 +39,9 @@
         <p><b>Address:</b> {{ event.address }} </p>
         <p><b>Price:</b> ${{ event.min_price }} - ${{ event.max_price }}</p>
         <p><b>Sales Start Date:</b> {{ event.salesStart }}</p>
-        <p><b>Buy Tickets:</b> <a href="{{ event.url }}"> Ticketmaster</a> </p>
+        <p><b>Buy Tickets:</b> <a target="_blank" href="{{ event.url }}"> Ticketmaster</a> </p>
         {% if event.homepage != "Unknown" %}
-        <p><b>Artist:</b> <a href="{{ event.homepage }}"> Website</a></p>
+        <p><b>Artist:</b> <a target="_blank" href="{{ event.homepage }}"> Website</a></p>
         {% endif %}
         {% if event.genres != "Unknown" %}
         <p><b>Genre:</b> {{ event.genres }}</p>
@@ -62,21 +62,21 @@
         <p class="mb-0">
             <span class="fw-bold mr-10 va-middle hide-mobile">Connect:</span>
             {% if event.facebook != "Unknown" %}
-            <a href="{{ event.facebook }}" class="btn btn-xs btn-facebook btn-circle btn-icon mr-5 mb-0"><i
+            <a target="_blank" href="{{ event.facebook }}" class="btn btn-xs btn-facebook btn-circle btn-icon mr-5 mb-0"><i
                     class="fab fa-facebook-f"></i></a>
             {% endif %}
             {% if event.twitter != "Unknown" %}
-            <a href="{{ event.twitter }}" class="btn btn-xs btn-twitter btn-circle btn-icon mr-5 mb-0"><i
+            <a target="_blank" href="{{ event.twitter }}" class="btn btn-xs btn-twitter btn-circle btn-icon mr-5 mb-0"><i
                     class="fab fa-twitter"></i></a>
             {% endif %}
 
             {% if event.youtube != "Unknown" %}
-            <a href="{{ event.youtube }}" class="btn btn-xs btn-youtube btn-circle btn-icon mr-5 mb-0"><i
+            <a target="_blank" href="{{ event.youtube }}" class="btn btn-xs btn-youtube btn-circle btn-icon mr-5 mb-0"><i
                     class="fab fa-youtube"></i></a>
             {% endif %}
 
             {% if event.instagram != "Unknown" %}
-            <a href="{{ event.instagram }}" class="btn btn-xs btn-instagram btn-circle btn-icon mr-5 mb-0"><i
+            <a target="_blank" href="{{ event.instagram }}" class="btn btn-xs btn-instagram btn-circle btn-icon mr-5 mb-0"><i
                     class="fab fa-instagram"></i></a>
             {% endif %}
 
@@ -125,7 +125,7 @@
             <b>Sample Listen</b>
             <br>
             {% if youtube_info.id != '' and youtube_info.thumbnail != ''%}
-            <br> <a href="https://www.youtube.com/watch?v={{youtube_info.id}}"><img src="{{youtube_info.thumbnail}}"
+            <br> <a target="_blank" href="https://www.youtube.com/watch?v={{youtube_info.id}}"><img src="{{youtube_info.thumbnail}}"
                     alt="Sample Thumbnail Image"></a>
             {% else %}
             <br>
