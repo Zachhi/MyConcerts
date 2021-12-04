@@ -54,15 +54,14 @@ onload="loadHamburgers();"
             {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
             {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
             </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="check[]" value="starred" id="starred">
-                <label class="form-check-label labelHelp" for="starred">Starred Concerts</label><br>
-                <!-- <input class="form-check-input" type="checkbox" name="check[]" value="unstarred" id="unstarred">
-                <label class="form-check-label labelHelp" for="unstarred">Unstarred Concerts</label><br> -->
-                <input class="form-check-input" type="checkbox" name="check[]" value="recommended" id="recommended">
-                <label class="form-check-label labelHelp" for="recommended">Recommended from Spotify</label>
+            <div class="custom-control custom-switch">
+                <input class="custom-control-input" type="checkbox" name="check[]" value="starred" id="starred">
+                <label class="custom-control-label labelHelp" for="starred">Starred Concerts</label>
             </div>
-            <br>
+            <div class="custom-control custom-switch mb-2">
+                <input class="custom-control-input" type="checkbox" name="check[]" value="recommended" id="recommended">
+                <label class="custom-control-label labelHelp" for="recommended">Recommended by Spotify</label>
+            </div>
             <button type="submit" class="btn btn-info">Submit</button>
             <button type="reset" class="btn btn-outline-info">Reset</button>
         </form>
