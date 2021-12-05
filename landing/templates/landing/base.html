@@ -26,6 +26,7 @@
 </head>
 
 <body {% block body_args %}{% endblock %}>
+    <br><br><br>
     <header class="site-header">
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-info">
             <div class="container">
@@ -37,7 +38,8 @@
                     <div class="navbar-nav mr-auto text-center m-1">
                         <div class="btn-group bg-dark rounded" role="group" aria-label="Basic example">
                             <a class="btn btn-outline-light" href="{% url 'login-home' %}">
-                                <i class="fas fa-guitar"></i> MyConcerts
+                                <i class="fas fa-guitar"></i>
+                                MyConcerts
                             </a>
                             {% if user.is_authenticated %}
                             <a class="btn btn-outline-light" href="{% url 'landing-home' page=0 %}">Home</a>
@@ -49,11 +51,11 @@
                     <div class="navbar-nav text-center">
                         <div class="btn-group bg-dark rounded m-1" role="group" aria-label="Basic example">
                             {% if user.is_authenticated %}
-                            <a class="btn btn-outline-light" href="{% url 'profile' %}">Profile</a>
                             <a class="btn btn-outline-light" href="{% url 'logout' %}">Logout</a>
+                            <a class="btn btn-outline-light" href="{% url 'profile' %}">Profile</a>
                             {% else %}
-                            <a class="btn btn-outline-light" href="{% url 'register' %}">Register</a>
                             <a class="btn btn-outline-light" href="{% url 'login' %}">Login</a>
+                            <a class="btn btn-outline-light" href="{% url 'register' %}">Register</a>
                             {% endif %}
                         </div>
                     </div>
@@ -61,11 +63,7 @@
             </div>
         </nav>
     </header>
-    {% if events %}
-    {% else %}
-    <br><br><br><br>
-    {% endif %}
-    <main role="main" class="d-flex justify-content-center m-0 p-0">
+    <main role="main" class="d-flex justify-content-center p-3">
             <!-- <div class="col-md-8"> -->
             <!-- {% if messages %}
             {% for message in messages %}
