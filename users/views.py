@@ -31,7 +31,6 @@ def profile(request):
     spotify_notif_obj = Spotify_Notification_Cred.objects.get(username=request.user)
     notification_prf = spotify_notif_obj.notifications
     spotify_status = spotify_notif_obj.has_spotify
-    print(spotify_status)
 
     return render(request, 'users/profile.html', {"notifications":str(notification_prf), 'spotify':str(spotify_status)})
 

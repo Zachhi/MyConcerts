@@ -275,10 +275,6 @@ def change_spotify(request):
     
 
 def home(request, page): 
-    # if(str(request.user) != 'AnonymousUser' and str(request.user) != 'admin'): #if logged in 
-    #     has_spotify = Spotify_Notification_Cred.objects.get(username = request.user)
-    #     if 'yes' in str(has_spotify):
-    #         userlisttop = get_spotify_info(request) 
 
     filters = {}
     user = request.user 
