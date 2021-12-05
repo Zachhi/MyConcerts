@@ -34,45 +34,42 @@ onload="loadHamburgers();"
 
 
 {% block content %}
-<div class="col-xl-2 col-md-3">
-    <div class="sticky-top">
-        <br><br><br><br>
-        <div class="content-section">
-            <div class="d-flex mb-4">
-                <h3 class="m-0">Filters</h3>
-                <div class="d-flex align-items-center justify-content-center">
-                    <div class="btn btn-small text-dark p-0" type="button" onclick="toggleHamburgers()">
-                        <i id="hamburger-toggler" class="bi bi-caret-right-fill"></i>
-                    </div>
+<div class="col-md-2" style="margin-right: 20px;">
+    <div class="content-section position-fixed">
+        <div class="d-flex mb-4">
+            <h3 class="m-0">Filters</h3>
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="btn btn-small text-dark p-0" type="button" onclick="toggleHamburgers()">
+                    <i id="hamburger-toggler" class="bi bi-caret-right-fill"></i>
                 </div>
             </div>
-            <form name="form_data" action="{% url 'landing-home' page=0 %}" method="POST">
-                <div>
-                    {% csrf_token %}
-                    {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
-                    {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
-                    {% include "landing/hamburger.html" with title="End Date" id="enddate" type="date"  %}
-                    {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
-                    {% include "landing/hamburger.html" with title="State" id="state" type="text" %}
-                    {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
-                </div>
-                <div class="custom-control custom-switch">
-                    <input class="custom-control-input" type="checkbox" name="check[]" value="starred" id="starred">
-                    <label class="custom-control-label labelHelp" for="starred">Liked Concerts</label>
-                </div>
-                <div class="custom-control custom-switch mb-2">
-                    <input class="custom-control-input" type="checkbox" name="check[]" value="recommended" id="recommended">
-                    <label class="custom-control-label labelHelp" for="recommended">Recommended by Spotify</label>
-                </div>
-                <button type="submit" class="btn btn-info">Submit</button>
-                <button type="reset" class="btn btn-outline-info">Reset</button>
-            </form>
         </div>
+        <!-- <p class='text-muted'>Leave filters you do not wish to use blank</p> -->
+        <form name="form_data" action="{% url 'landing-home' page=0 %}" method="POST">
+            <div>
+            {% csrf_token %}
+            {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
+            {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
+            {% include "landing/hamburger.html" with title="End Date" id="enddate" type="date"  %}
+            {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
+            {% include "landing/hamburger.html" with title="State" id="state" type="text" %}
+            {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
+            </div>
+            <div class="custom-control custom-switch">
+                <input class="custom-control-input" type="checkbox" name="check[]" value="starred" id="starred">
+                <label class="custom-control-label labelHelp" for="starred">Liked Concerts</label>
+            </div>
+            <div class="custom-control custom-switch mb-2">
+                <input class="custom-control-input" type="checkbox" name="check[]" value="recommended" id="recommended">
+                <label class="custom-control-label labelHelp" for="recommended">Recommended by Spotify</label>
+            </div>
+            <button type="submit" class="btn btn-info">Submit</button>
+            <button type="reset" class="btn btn-outline-info">Reset</button>
+        </form>
     </div>
 </div>
-<div class="col-xl-9 col-md-8">
-    {% if events != "error" %}
-    <br><br><br><br>
+{% if events != "error" %}
+<div class="col-md-9">
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-{{ message.tags }}">
@@ -103,6 +100,7 @@ onload="loadHamburgers();"
             {% endfor %}
         </div>
         <div class="d-flex justify-content-center">
+
             {% if page == 0 %}
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}?{{filters|get_encoded_dict}}">Next</a>
             {% elif page > 0 %}
@@ -111,13 +109,29 @@ onload="loadHamburgers();"
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}?{{filters|get_encoded_dict}}">Next</a>
             {% endif %}
         </div>
+
     </div>
-    {% else %}
-    <p>Nothing left to Display</p>
-    <!-- <form><input type="button" value="Back" onclick="history.back()"></form> -->
-<button type="submit" class="btn btn-outline-info" onclick="history.back()">Return to Gallery</button>
-    {% endif %}
 </div>
+{% else %}
+<div class="col text-center">
+    <p>Nothing left to Display</p>
+            <!-- <form><input type="button" value="Back" onclick="history.back()"></form> -->
+        <button type="submit" class="btn btn-outline-info" onclick="history.back()">Return to Gallery</button>
+</div>
+<!-- <div class="col-md-4">
+    <div class="content-section">
+        <h3>Filters</h3>
+        <p class='text-muted'>This is where our filters will go
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-light">By Date</li>
+            <li class="list-group-item list-group-item-light">By Genre</li>
+            <li class="list-group-item list-group-item-light">By Distance</li>
+            <li class="list-group-item list-group-item-light">By Price</li>
+        </ul>
+        </p>
+    </div>
+</div>-->
+{% endif %}
 
  
 {% endblock content %}
