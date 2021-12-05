@@ -1,11 +1,49 @@
 {% extends "landing/base.html" %}
 {% block content %}
+<div>
+    <div class="d-flex align-items-center justify-content-center">
+        <h1>About</h1>
+    </div>
+
+    <div class="d-flex row align-items-center justify-content-center m-5 text-justify">
+        <div class="col-6">
+            <p>
+                Have you ever wanted to easily find nearby concerts?
+                The purpose of this website is to do just that!
+                MyConcerts is a tool that allows users to easily search for concerts in their vicinity.
+            </p>
+            <p>
+                Have an particular artist in mind? You can easily search their name and be presented with any concerts that might be related.
+                We provide additional filters for Genre, City, and Time-frame!
+            </p>
+            <p>
+                A concert's details page shows info ranging from date and venue locations to price and even a sample of an artist's music.
+                If you would like to purchase a ticket, we provide a link to the Ticketmaster website as well.
+            </p>
+            <p>
+                In addition, if there is a specific concert that piques your interest,
+                you can easily "favorite" that concert and then filter by favorites to find it quickly.
+            </p>
+            <p>
+                We provide Spotify support as well.
+                By linking to a spotify account,
+                MyConcerts can provide recommendations directly from your favorite artists and music on spotify!
+            </p>
+            <p>
+                This app was made as for a school project.
+                As concert-enjoyers, we were inpired to design a website that made it easy to find nearby concerts.
+                The developers are all Texas A&M computer science students.
+                Thank you for using our software and enjoy!
+            </p>
+        </div>
+    </div>   
+       
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-{{ message.tags }}">
         {{ message }}
     </div>
-    {% endfor %}
-    {% endif %}
-    <h1>About page</h1>
+</div>
+{% endfor %}
+{% endif %}
 {% endblock content %}
