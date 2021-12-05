@@ -31,8 +31,16 @@
                 <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{ user.username }}</p>
                 <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{ user.email }}</p>
                 <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">**********</p>
-                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{notifications}}</p>
-                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{spotify}}</p>                
+                {% if notifications == "True" %}
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">Notifications Enabled</p>
+                {% else %}
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">Notifications Disabled</p>
+                {% endif %}
+                {% if spotify == "yes" %}
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">Spotify Enabled</p> 
+                {% else %}
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">Spotify Disabled</p> 
+                {% endif %}               
             </div>
         </div>
 
@@ -46,21 +54,28 @@
 
                 {% if notifications == "True" %}
                 <label class="switch" activation_status = 1 style="margin-top: 1.4em;" >
-                    <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs" checked data-toggle="toggle" >
+                    <input type="checkbox" name = "notifs[]" value = "notifs" id = "notifs" checked data-toggle="toggle" >
                     <span class="slider round"></span>
                 </label>
                 {% else %}
                 <label class="switch" activation_status = 1 style="margin-top: 1.4em;">
-                    <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs">
+                    <input type="checkbox" name = "notifs[]" value = "notifs" id = "notifs">
                     <span class="slider round"></span>
                 </label>
                 {% endif %}
                 <br><br>
 
+                {% if spotify == "yes" %}
                 <label class="switch">
-                    <input type="checkbox" name = "slider[]" value = "spotify" id = "spotify">
+                    <input type="checkbox" name = "spotify[]" value = "spotify" id = "spotify" checked data-toggle="toggle">
                     <span class="slider round"></span>
                 </label>
+                {% else %}
+                <label class="switch">
+                    <input type="checkbox" name = "spotify[]" value = "spotify" id = "spotify">
+                    <span class="slider round"></span>
+                </label>
+                {% endif %}
             </form>
         </div>
     </div>

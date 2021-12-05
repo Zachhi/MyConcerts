@@ -147,29 +147,45 @@ def settings_main(request):
     newusername = ''
     newemail = ''
     newpassword = ''
-    sliders = ['']*2#slider tracks [notifications on/off, spotify enabled/disabled]\
+    notifToggle = [] #slider tracks [notifications on/off, spotify enabled/disabled]\
+    spotifyToggle = []
     
     if request.method == 'GET':
         newusername = request.GET.get('changeUser')
         newemail = request.GET.get('changeEmail')
         newpassword = request.GET.get('changePass')
-        sliders = request.GET.getlist("slider[]")
+        notifToggle = request.GET.getlist('notifs[]')
+        spotifyToggle = request.GET.getlist('spotify[]')
     elif request.method == "POST":
         newusername = request.POST.get('changeUser')
         newemail = request.POST.get('changeEmail')
         newpassword = request.POST.get('changePass')
-        sliders = request.POST.getlist("slider[]")
+        notifToggle = request.POST.getlist('notifs[]')
+        spotifyToggle = request.POST.getlist('spotify[]')
     
-    if newusername != '':
-        return change_username(request)
-    if len(sliders) > 0:
-        return change_notifications(request)
-    #if len(sliders) > 1:
-    #    return change_spotify(request)
+
+    #we need to check in this order:
+    #notif/spotify, password, email, username last
+
+    if len(notifToggle) > 0: #if length is > 0, it is toggled on. request a change notif with "true" to turn on
+        change_notifications(request, True)
+    elif len(notifToggle) == 0: #if length is 0, it is toggled off. request a change notif with "false" to turn off
+        change_notifications(request, False)
+
+    spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
+    has_spotify = str(spotify_notif_obj).split(',')[0]
+    if len(spotifyToggle) > 0 and has_spotify == 'no':
+        return change_spotify(request, True)
+    elif len(spotifyToggle) == 0:
+        change_spotify(request, False)
+
     if newpassword != '':
-        return change_password(request)
+        change_password(request)
     if newemail != '':
-        return change_email(request)
+        change_email(request)
+    if newusername != '':
+        change_username(request)
+  
     return redirect('profile')
 
 def change_password(request):
@@ -183,7 +199,6 @@ def change_password(request):
         user.set_password(newpassword)
         user.save()
     messages.success(request, f'New Password created! Please login again.')
-    return redirect('profile')
 
 
 def change_username(request):
@@ -213,7 +228,6 @@ def change_username(request):
     #TODO render back to Profile - username change success page?.. or pass success message? 
     messages.success(request, f'New Username created: {user.username}!')
     #return render(request, 'users/profile.html')
-    return redirect('profile')
 
 def change_email(request):
     #add a check for admin/anonymous user
@@ -237,39 +251,36 @@ def change_email(request):
             starconcert_obj.save()
     #TODO render back to Profile - username change success page?.. or pass success message? 
     messages.success(request, f'New Email Created: {user.email}!')
-    return redirect('profile')
 
-def change_notifications(request):
+def change_notifications(request, toggled):
     #will always be logged in to be able to see profile page
     spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
     notification_pref = str(spotify_notif_obj).split(',')[1]
 
-    if (notification_pref == "True"):
-        spotify_notif_obj.notifications = 0
-    else:
+    if (toggled) and notification_pref == "False":
         spotify_notif_obj.notifications = 1
+        messages.success(request, f'Notification Preferences Turned On')
+    elif (not toggled) and notification_pref == "True":
+        spotify_notif_obj.notifications = 0
+        messages.success(request, f'Notification Preferences Turned Off')
     spotify_notif_obj.save()
-    messages.success(request, f'Notification Preferences Changed!')
-
     
-    return redirect('profile')
 
-def change_spotify(request):
+
+def change_spotify(request, toggled):
     spotify_notif_obj = Spotify_Notification_Cred.objects.get(username = request.user)
     has_spotify = str(spotify_notif_obj).split(',')[0]
-    if has_spotify == 'no':
+    if toggled and has_spotify == 'no':
         spotify_notif_obj.has_spotify = 'yes'
         spotify_notif_obj.save()
         auth_url = sp.get_authorize_url()
-
+        messages.success(request, f'Spotify turned on')
         return redirect(auth_url)
-    else:
+    elif not toggled and has_spotify == 'yes':
         spotify_notif_obj.has_spotify = 'no'
         spotify_notif_obj.save()
-
-        messages.success(request, f'Spotify accessibility changed.')
+        messages.success(request, f'Spotify turned off')
         #TODO send indicator look at users/vies.py
-        return redirect('profile')
 
 
     
