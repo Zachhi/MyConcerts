@@ -229,7 +229,7 @@ a.article-title:hover {
   right: 0;
   bottom: 0;
   /*background-color: rgb(60, 206, 243);*/
-  background-color: rgb(103, 103, 134);
+  background-color: rgb(173, 173, 173);
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -247,7 +247,7 @@ a.article-title:hover {
 }
 
 input:checked + .slider {
-  background-color: #00f06c;
+  background-color: #128caa;
 }
 
 input:focus + .slider {
