@@ -674,7 +674,7 @@ def add_star(request):
     notification_prf = str(notification_prf).split(",")
     if(notification_prf[1] == "1"):
         print("notification_prf")
-        subject = 'MyConcerts: Your starred concert!'
+        subject = 'MyConcerts: Your liked concert!'
         html_message = render_to_string('landing/detail.html', {'event': event})
         plain_message = strip_tags(html_message)
         send_mail(subject, plain_message, 'noreply@example.com', [request.user.email], html_message=html_message)

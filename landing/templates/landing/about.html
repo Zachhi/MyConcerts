@@ -1,11 +1,12 @@
 {% extends "landing/base.html" %}
 {% block content %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    <h1>About page</h1>
+
+<h1>About</h1>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
 {% endblock content %}

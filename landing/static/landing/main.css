@@ -7,17 +7,14 @@
   --t2: #444444;
 }
 
-html {
-  height: 100%;
-  margin: 0;
-}
 
+html,
 body {
   height: 100%;
+  margin: 0;
+  color: var(--t1);
   background: var(--b3);
   font-family: "Verdana", "Times New Roman";
-  color: var(--t1);
-  margin-top: 5rem;
 }
 
 h3,
@@ -124,13 +121,6 @@ a.article-title:hover {
   font-size: 2rem;
 }
 
-a {
-  transition: all 0.3s !important;
-}
-a:hover {
-  transform: scale(1.15);
-}
-
 .cardHelp {
   text-decoration: none;
   color: #1d1d1d;
@@ -151,8 +141,12 @@ a:hover {
 
 .cardMargin {
   margin-bottom: 30px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  transition: all 0.3s !important;
+}
+.cardMargin:hover {
+  transform: scale(1.15);
 }
 
 /* Help align different sized text vertically in cards */
@@ -275,3 +269,10 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+.profileText {
+  margin-bottom: 10%; 
+  font-size: 1.4em; 
+  color: rgb(97, 40, 40); 
+  display: inline-block; 
+  text-align: left;
+}

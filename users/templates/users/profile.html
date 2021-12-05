@@ -10,13 +10,6 @@
 
     <div class = "row text-center">
         <div class = "col text-center">
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %}
             <p><h1> Your Profile </h1> </p>
             <p><h4 style="margin-bottom: 5%; color: rgb(187, 187, 187);"> {{user.first_name}} {{user.last_name}} </h4> </p>
         </div>
@@ -24,27 +17,27 @@
 
     <div class = "row text-center">
         <div class = "col-md-4" >
-            <div style="margin-bottom: 10%; font-size: 1.2em; color: rgb(255, 255, 255); display: inline-block; text-align: left;">
-                <p style="margin-bottom: 2em;">Username: </p>
-                <p style="margin-bottom: 2em;">Email: </p>
-                <p style="margin-bottom: 2em;">Password: </p>
-                <p style="margin-bottom: 2em;">Notifications: </p>
-                <p style="margin-bottom: 2em;">Spotify: </p>
+            <div style="margin-bottom: 10%; display: inline-block; text-align: left;">
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Username: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Email: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Password: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Notifications: </p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(255, 255, 255);">Spotify: </p>
             </div>
         </div>
 
         <div class = "col-md-4">
-            <div style="margin-bottom: 10%; font-size: 1.2em; color: rgb(151, 151, 151);display: inline-block; text-align: left;">
-                <p style="margin-bottom: 2em;">{{ user.username }}</p>
-                <p style="margin-bottom: 2em;">{{ user.email }}</p>
-                <p style="margin-bottom: 2em;">**********</p>
-                <p style="margin-bottom: 2em;">{{notifications}}</p>
-                <p style="margin-bottom: 2em;">{{spotify}}</p>                
+            <div style="margin-bottom: 10%; display: inline-block; text-align: left;">
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{ user.username }}</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{ user.email }}</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">**********</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{notifications}}</p>
+                <p style="margin-bottom: 2em; font-size: 1.2em; color: rgb(168, 168, 168);">{{spotify}}</p>                
             </div>
         </div>
 
-        <div class = "col-md-4" style="text-align: left;">
-            <form action="{% url 'settings-main'%}" method="POST">
+        <div class="col-md-4" style="text-align: left;">
+            <form id="settings-form" action="{% url 'settings-main'%}" method="POST">
                 {% csrf_token %}
                 {% include "landing/hamburger.html" with title="Change Username" id="changeUser" type="text"  %}
                 {% include "landing/hamburger.html" with title="Change Email" id="changeEmail" type="text"  %}
@@ -52,29 +45,34 @@
 
 
                 {% if notifications == "True" %}
-                they want notifications
+                <label class="switch" activation_status = 1 style="margin-top: 1.4em;" >
+                    <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs" checked data-toggle="toggle" >
+                    <span class="slider round"></span>
+                </label>
                 {% else %}
-                they dont want notifications
-                {% endif %}
-
-                <label class="switch" activation_status = 1 style="margin-top: 1em;">
+                <label class="switch" activation_status = 1 style="margin-top: 1.4em;">
                     <input type="checkbox" name = "slider[]" value = "notifs" id = "notifs">
                     <span class="slider round"></span>
                 </label>
+                {% endif %}
                 <br><br>
 
                 <label class="switch">
                     <input type="checkbox" name = "slider[]" value = "spotify" id = "spotify">
                     <span class="slider round"></span>
                 </label>
-                <br><br>
-
-                <button type="submit" class="btn btn-outline-info">Submit</button>
             </form>
         </div>
     </div>
-
-
+    <div class="text-center">
+        <button type="submit" class="btn btn-outline-info m-2" form="settings-form">Submit</button>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
     </div>
 </div>
 
