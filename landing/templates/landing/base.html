@@ -26,7 +26,6 @@
 </head>
 
 <body {% block body_args %}{% endblock %}>
-    <br><br><br>
     <header class="site-header">
         <nav class="navbar navbar-expand-md fixed-top bg-info">
             <div class="container">
@@ -62,7 +61,11 @@
             </div>
         </nav>
     </header>
-    <main role="main" class="d-flex justify-content-center p-3">
+    {% if events %}
+    {% else %}
+    <br><br><br><br>
+    {% endif %}
+    <main role="main" class="d-flex justify-content-center m-0 p-0">
             <!-- <div class="col-md-8"> -->
             <!-- {% if messages %}
             {% for message in messages %}

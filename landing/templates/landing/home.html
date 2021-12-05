@@ -36,7 +36,7 @@ onload="loadHamburgers();"
 {% block content %}
 <div class="col-xl-2 col-md-3">
     <div class="sticky-top">
-        <br><br><br>
+        <br><br><br><br>
         <div class="content-section">
             <div class="d-flex mb-4">
                 <h3 class="m-0">Filters</h3>
@@ -70,8 +70,9 @@ onload="loadHamburgers();"
         </div>
     </div>
 </div>
-{% if events != "error" %}
 <div class="col-xl-9 col-md-8">
+    {% if events != "error" %}
+    <br><br><br><br>
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-{{ message.tags }}">
@@ -102,39 +103,21 @@ onload="loadHamburgers();"
             {% endfor %}
         </div>
         <div class="d-flex justify-content-center">
-
             {% if page == 0 %}
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}?{{filters|get_encoded_dict}}">Next</a>
             {% elif page > 0 %}
-            {% with count = 0 %}
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=0 %}?{{filters|get_encoded_dict}}">First</a>
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'-1' %}?{{filters|get_encoded_dict}}">Previous</a>
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}?{{filters|get_encoded_dict}}">Next</a>
             {% endif %}
         </div>
-
     </div>
-</div>
-{% else %}
-<div class="col text-center">
+    {% else %}
     <p>Nothing left to Display</p>
-            <!-- <form><input type="button" value="Back" onclick="history.back()"></form> -->
-        <button type="submit" class="btn btn-outline-info" onclick="history.back()">Return to Gallery</button>
+    <!-- <form><input type="button" value="Back" onclick="history.back()"></form> -->
+<button type="submit" class="btn btn-outline-info" onclick="history.back()">Return to Gallery</button>
+    {% endif %}
 </div>
-<!-- <div class="col-md-4">
-    <div class="content-section">
-        <h3>Filters</h3>
-        <p class='text-muted'>This is where our filters will go
-        <ul class="list-group">
-            <li class="list-group-item list-group-item-light">By Date</li>
-            <li class="list-group-item list-group-item-light">By Genre</li>
-            <li class="list-group-item list-group-item-light">By Distance</li>
-            <li class="list-group-item list-group-item-light">By Price</li>
-        </ul>
-        </p>
-    </div>
-</div>-->
-{% endif %}
 
  
 {% endblock content %}
