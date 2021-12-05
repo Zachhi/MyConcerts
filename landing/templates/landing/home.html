@@ -34,42 +34,44 @@ onload="loadHamburgers();"
 
 
 {% block content %}
-<div class="col-md-2" style="margin-right: 20px;">
-    <div class="content-section position-fixed">
-        <div class="d-flex mb-4">
-            <h3 class="m-0">Filters</h3>
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="btn btn-small text-dark p-0" type="button" onclick="toggleHamburgers()">
-                    <i id="hamburger-toggler" class="bi bi-caret-right-fill"></i>
+<div class="col-xl-2 col-md-3">
+    <div class="sticky-top">
+        <br><br><br>
+        <div class="content-section">
+            <div class="d-flex mb-4">
+                <h3 class="m-0">Filters</h3>
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="btn btn-small text-dark p-0" type="button" onclick="toggleHamburgers()">
+                        <i id="hamburger-toggler" class="bi bi-caret-right-fill"></i>
+                    </div>
                 </div>
             </div>
+            <form name="form_data" action="{% url 'landing-home' page=0 %}" method="POST">
+                <div>
+                    {% csrf_token %}
+                    {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
+                    {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
+                    {% include "landing/hamburger.html" with title="End Date" id="enddate" type="date"  %}
+                    {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
+                    {% include "landing/hamburger.html" with title="State" id="state" type="text" %}
+                    {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
+                </div>
+                <div class="custom-control custom-switch">
+                    <input class="custom-control-input" type="checkbox" name="check[]" value="starred" id="starred">
+                    <label class="custom-control-label labelHelp" for="starred">Liked Concerts</label>
+                </div>
+                <div class="custom-control custom-switch mb-2">
+                    <input class="custom-control-input" type="checkbox" name="check[]" value="recommended" id="recommended">
+                    <label class="custom-control-label labelHelp" for="recommended">Recommended by Spotify</label>
+                </div>
+                <button type="submit" class="btn btn-info">Submit</button>
+                <button type="reset" class="btn btn-outline-info">Reset</button>
+            </form>
         </div>
-        <!-- <p class='text-muted'>Leave filters you do not wish to use blank</p> -->
-        <form name="form_data" action="{% url 'landing-home' page=0 %}" method="POST">
-            <div>
-            {% csrf_token %}
-            {% include "landing/hamburger.html" with title="Search" id="search" type="text"  %}
-            {% include "landing/hamburger.html" with title="Start Date" id="startdate" type="date"  %}
-            {% include "landing/hamburger.html" with title="End Date" id="enddate" type="date"  %}
-            {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
-            {% include "landing/hamburger.html" with title="State" id="state" type="text" %}
-            {% include "landing/hamburger.html" with title="Genre" id="genre" type="text"  %}
-            </div>
-            <div class="custom-control custom-switch">
-                <input class="custom-control-input" type="checkbox" name="check[]" value="starred" id="starred">
-                <label class="custom-control-label labelHelp" for="starred">Liked Concerts</label>
-            </div>
-            <div class="custom-control custom-switch mb-2">
-                <input class="custom-control-input" type="checkbox" name="check[]" value="recommended" id="recommended">
-                <label class="custom-control-label labelHelp" for="recommended">Recommended by Spotify</label>
-            </div>
-            <button type="submit" class="btn btn-info">Submit</button>
-            <button type="reset" class="btn btn-outline-info">Reset</button>
-        </form>
     </div>
 </div>
 {% if events != "error" %}
-<div class="col-md-9">
+<div class="col-xl-9 col-md-8">
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-{{ message.tags }}">
@@ -104,6 +106,7 @@ onload="loadHamburgers();"
             {% if page == 0 %}
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}?{{filters|get_encoded_dict}}">Next</a>
             {% elif page > 0 %}
+            {% with count = 0 %}
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=0 %}?{{filters|get_encoded_dict}}">First</a>
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'-1' %}?{{filters|get_encoded_dict}}">Previous</a>
                 <a class="btn btn-outline-info mb-4 m-3" href="{% url 'landing-home' page=page|add:'+1' %}?{{filters|get_encoded_dict}}">Next</a>
