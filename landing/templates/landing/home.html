@@ -3,16 +3,25 @@
 
 {% block extrahead %}
 <script>
+    function resetHamburgers() {
+        window.sessionStorage.setItem("hamburgerness", "false");
+    }
     function loadHamburgers() {
         var toggler = document.getElementById("hamburger-toggler");
         if(!window.sessionStorage) toggler.classList.add("invisible");;
         var hamburgers = document.getElementsByClassName("collapse");
+        // var hamburger_parents = document.getElementsByClassName("btn-outline-info");
         var state = window.sessionStorage.getItem("hamburgerness");
         // console.log(state);
         state = ((state == "true") ? "true" : "false");
         for (let index = 1; index < hamburgers.length; index++) {
             hamburgers.item(index).classList.toggle("show", state == "true");
+            // hamburger_parents.item(index).classList.toggle("collapsed", state == "false");
         }
+        // for (let index = 0; index < hamburger_parents.length; index++) {
+            // hamburgers.item(index).classList.toggle("show", state == "true");
+            // hamburger_parents.item(index).classList.toggle("collapsed", state == "false");
+        // }
         toggler.classList.toggle("bi-caret-right-fill", state == "false");
         toggler.classList.toggle("bi-caret-down-fill", state == "true");
     }
@@ -29,7 +38,7 @@
 {% endblock %}
 
 {% block body_args %}
-onload="loadHamburgers();"
+onload="resetHamburgers();"
 {% endblock %}
 
 
@@ -56,7 +65,7 @@ onload="loadHamburgers();"
                     {% include "landing/hamburger.html" with title="City" id="city" type="text"  %}
                     <div class="form-group">
                         <!-- Collapse button -->
-                        <div class="btn btn-outline-info mb-1" type="button" data-toggle="collapse" data-target="#state"
+                        <div class="btn btn-outline-info mb-1 collapsed" type="button" data-toggle="collapse" data-target="#state"
                         aria-controls="state" aria-expanded="false" aria-label="Toggle form">
                         State
                         </div>
