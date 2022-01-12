@@ -18,17 +18,18 @@ https://www.youtube.com/watch?v=bvd4KsevTKk
 
 ### Dependencies
 
-* Some way to compile and execute Java code
-* SQL and PostgreSQL
-* Access to Tamu network, either directly or through a VPN in order to access the database
+* Some way to compile and execute Python code
+* SQL
+* Javascript, HTML, CSS, and Bootstrap are used. You do not need to worry about anything to use these though
 
 ### Installing and Executing
 
-* Download the source code from github, or clone the repository into Visual Studio
-* Change directory to <currentDir>/Reveilles-Reels/GUI
-* Compile with `javac *.java`
-* Execute with `java -cp ".;postgresql-42.2.8.jar" MainFile`. Use a `:` instead of a `;` if on Mac
-* Type `V` for client view, or `A` for analyst view
+* Download the source code from github, or clone the repository
+* Change directory to <currentDir>/concerts
+* Run `pip install django` (if you don't already have Django)
+* Run `pip install -r requirements.txt` (this will install all required libraries)
+* Run `python manage.py runserver`
+* A url will print, follow this url and you are done
 
 ## Authors
 
