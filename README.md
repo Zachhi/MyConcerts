@@ -1,19 +1,15 @@
 
 # MyConcerts
 
-A movie recommendation software created in a team of 5 that recommends movies to clients based on different parameters. There is both a client and an analyst side. The client side uses a clients data to analyze their watch history and preferences. The analyst side is for people who want to analyze what movies are popular and what movies they should create more of. Implemented using Java, Java Swing, SQL, and PostgreSQL. Waterfall methodology was used in planning and executing this project. 
+A web application that finds upcoming concerts you would be interested in based on your Spotify data. If you do not link your spotify account, it will still show upcoming concerts. Allows you to sort by location, date, genre, and more. Implemented using Django, Python, HTML/CSS, JavaScript, Bootstrap, SQL, and multiple APIs including the Ticket Master, Spotify, and Youtube API. Created in a team of 5 following Agile procedures. 
 
-Data is pulled from 5 different csv files, each with 500,000 lines of data. Data is pulled, formatted, and stored into an online database using java and SQL. The data is then  fetched from the online database using java and SQL in order to give the correct analysis and results.
+Includes register/login utilities which encrypts your information, notifications to your email which can be toggled, a edit profile page, and more. Concerts are cleanly lined up with photos, information, price, and more. If you click on a certain concert, you can see more detailed information. This includes a link where you can buy the ticket, a youtube preview of the artist, and information given by the concert organizers such as parking/food information and concert policy. Each concert can be 'starred' which allows you to save concerts to your profile favorites. Supports accessibility for the color blind and those who are blind/cannot read.
 
-Recommendations are based on many things, such as the client's top rated directors, movies, genres, similar movies, etc. Also based on movies other client's who watched
-similar movies like, and more. There are many different utilities, such as a "movies to stay away from" and a "director's choice" section. The analyst side has a lot of ways
-to analyze movies, such as determining what actors have chemistry, what movies have a cult following, and more.
-
-I just moved this to my main github account instead of my school one.
+I just moved this to my main github account from my school one.
 
 ## Demo
 
-https://www.youtube.com/watch?v=bvd4KsevTKk
+link here
 
 
 ### Dependencies
